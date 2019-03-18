@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import './Holder.dart';
 import './NewFeed.dart';
+import './Profile.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -11,13 +12,13 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int index = 0;
-  final List<Widget> _children = [
-    NewFeed(),
-    Holder('Notify'),
-    Holder('Map'),
-    Holder('Profile'),
-    Holder('Settings')
-  ];
+  List<Widget> _children = [
+      NewFeed(),
+      Holder('Notify'),
+      Holder('Map'),
+      Profile(),
+      Holder('Settings')
+    ];
 
   void _navHandler(int index) {
     setState(() {

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:fitsbook/MainPage.dart';
-import 'package:fitsbook/register.dart';
+import './MainPage.dart';
+import './register.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

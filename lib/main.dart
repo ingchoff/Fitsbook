@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
-import './login.dart';
+import 'ui/post_screen.dart';
+import 'ui/test_screen.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    final appTitle = 'Fitsbook';
-
     return MaterialApp(
-      title: appTitle,
-      home: Scaffold(
-        body: Login(),
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        primarySwatch: Colors.blue,
       ),
+      initialRoute: "/",
+      routes: {
+        "/": (context) => TestForm(),
+      },
     );
   }
 }

@@ -20,7 +20,7 @@ class _NewFeedState extends State<NewFeed> {
     super.initState();
     //อ่านค่า email ของ uid ที่ signin เข้ามา ในไฟล์ data.txt
     // readFile('ชื่อ key ที่อยากดึง value มาใข้')
-    readFile('email').then((String value) {
+    readFile('dname').then((String value) {
       txt = value;
     });
   }

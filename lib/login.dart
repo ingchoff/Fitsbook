@@ -185,8 +185,6 @@ class LoginState extends State<Login> {
             'noti_token':token
           },merge: true);
           writeFile(user,token); //save ค่า uid, email, token ลง data.txt
-          //ถ้า Login สำเร็จจะไปที่หน้าหลักโดยมีการส่งค่า user ที่ login ไปหน้าหลัก
-          // Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage(user: user))); 
           Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));//ถ้า Login สำเร็จจะไปที่หน้าหลักที่มีการดึงข้อมูลมาจาก local storage
         } else {
           setState(() {
@@ -230,7 +228,18 @@ class LoginState extends State<Login> {
   //เก็บค่า uid และ email ไว้ในไฟล์ data.txt
   Future<File> writeFile(user,token) async {
     final file = await _localFile;
-    String data = '{"userId":'+'"'+user.uid+'"'+',"email":"'+user.email+'"'+',"token":"$token"'+'}';
+    var users = await store.collection('users').document(user.uid).get();
+    String fname = users.data['fname'];
+    String lname = users.data['lname'];
+    String dname = users.data['dname'];
+    String profile = users.data['profile'];
+    String gender = users.data['gender'];
+    String birthdate = users.data['birthdate'].toString();
+    print(fname);
+    String data = '{"userId":'+'"'+user.uid+'"'+',"email":"'+user.email+'"'+',"token":"$token"'+
+    ',"dname":"'+dname+'"'+',"fname":"'+fname+'"'+
+    ',"lname":"'+lname+'"'+',"profile":"'+profile+'"'+
+    ',"gender":"'+gender+'"'+',"birthdate":"'+birthdate+'"'+'}';
     print(data);
     return file.writeAsString(data); // Write the file
   }

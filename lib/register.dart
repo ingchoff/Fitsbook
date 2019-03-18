@@ -159,50 +159,38 @@ class RegisterState extends State<Register> {
                 ),
               ),
             ),
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                new Expanded(
-                  child: TextFormField(
-                  validator: (String value) {
-                    if (value.isEmpty) {
-                      return 'โปรดระบุ Password';
-                    }else if(value.length <= 6) {
-                      return 'Password ต้องมากกว่า 6 ตัวอักษร';
-                    }
-                  },
-                  controller: password,
-                  keyboardType: TextInputType.text,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'password',
-                    icon: Icon(Icons.https)
-                    ),
-                  ),
+            TextFormField(
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'โปรดระบุ Password';
+                }else if(value.length <= 6) {
+                  return 'Password ต้องมากกว่า 6 ตัวอักษร';
+                }
+              },
+              controller: password,
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'password',
+                prefixIcon: Icon(Icons.https)
                 ),
-                new Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 0),
-                    child: TextFormField(
-                      validator: (String value) {
-                        if (value.isEmpty) {
-                          return 'โปรดระบุ Password';
-                        }else if(value.length <= 6) {
-                          return 'Password ต้องมากกว่า 6 ตัวอักษร';
-                        }
-                      },
-                      controller: conPassword,
-                      keyboardType: TextInputType.text,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'confirm password',
-                        icon: Icon(Icons.https)
-                      ),
-                    ),
-                  ) 
+              ),
+              TextFormField(
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'โปรดระบุ Password';
+                }else if(value.length <= 6) {
+                  return 'Password ต้องมากกว่า 6 ตัวอักษร';
+                }
+              },
+              controller: conPassword,
+              keyboardType: TextInputType.text,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'confirm password',
+                prefixIcon: Icon(Icons.https)
                 ),
-              ],
-            ),
+              ),
             Padding(
               padding: EdgeInsets.symmetric(vertical: 30),
               child: SizedBox(
@@ -278,7 +266,7 @@ class RegisterState extends State<Register> {
               'dname':dname.text,
               'birthdate': int.parse(birthday.text),
               'joinDate':formatter.format(DateTime.now()),
-              'friend':['user_id']});
+              'profile':""});
             setState(() {
             _isLoading = false; 
             });

@@ -55,78 +55,6 @@ class LoginState extends State<Login> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: ListView(
-        shrinkWrap: true,
-        padding: EdgeInsets.only(left: 24.0, right: 24.0),
-        children: <Widget>[
-          Padding(
-            padding: EdgeInsets.only(top: 50),
-            child: Image.asset('resources/logo.jpg',height: 250,),
-          ),  
-          Padding(
-            padding: EdgeInsets.only(top: 30),
-            child: TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please, enter Email';
-                }
-              },
-              controller: textValue1,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                prefixIcon: Icon(Icons.person),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(top: 20, bottom: 30),
-            child: TextFormField(
-              keyboardType: TextInputType.text,
-              validator: (String value) {
-                if (value.isEmpty) {
-                  return 'Please, enter password';
-                }
-              },
-              controller: textValue2,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                prefixIcon: Icon(Icons.https),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
-              ),
-              obscureText: true,
-              ),
-          ),   
-          Padding(
-            padding: EdgeInsets.only(bottom: 10),
-            child: SizedBox(
-              height: 50,
-              child: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                onPressed: signIn,
-                child: setUpButtonChild(),
-                color: Colors.lightBlueAccent,
-              ),
-            )
-          ),
-          FlatButton(
-            onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => Register()));
-            },
-            child: Text('Register New Account',style: TextStyle(color: Colors.teal, fontSize: 16),textAlign: TextAlign.right,),
-          ),
-        ]
-      )
-    );
-  }
-
   Widget setUpButtonChild() {
     if (_isLoading) {
       return CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),);
@@ -233,5 +161,77 @@ class LoginState extends State<Login> {
     String data = '{"userId":'+'"'+user.uid+'"'+',"email":"'+user.email+'"'+',"token":"$token"'+'}';
     print(data);
     return file.writeAsString(data); // Write the file
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: ListView(
+        shrinkWrap: true,
+        padding: EdgeInsets.only(left: 24.0, right: 24.0),
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(top: 50),
+            child: Image.asset('resources/logo.jpg',height: 250,),
+          ),  
+          Padding(
+            padding: EdgeInsets.only(top: 30),
+            child: TextFormField(
+              keyboardType: TextInputType.emailAddress,
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please, enter Email';
+                }
+              },
+              controller: textValue1,
+              decoration: InputDecoration(
+                labelText: 'Email',
+                prefixIcon: Icon(Icons.person),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 20, bottom: 30),
+            child: TextFormField(
+              keyboardType: TextInputType.text,
+              validator: (String value) {
+                if (value.isEmpty) {
+                  return 'Please, enter password';
+                }
+              },
+              controller: textValue2,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                prefixIcon: Icon(Icons.https),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
+              ),
+              obscureText: true,
+              ),
+          ),   
+          Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: SizedBox(
+              height: 50,
+              child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                onPressed: signIn,
+                child: setUpButtonChild(),
+                color: Colors.lightBlueAccent,
+              ),
+            )
+          ),
+          FlatButton(
+            onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Register()));
+            },
+            child: Text('Register New Account',style: TextStyle(color: Colors.teal, fontSize: 16),textAlign: TextAlign.right,),
+          ),
+        ]
+      )
+    );
   }
 }

@@ -9,7 +9,7 @@ class Profile extends StatefulWidget {
   final String uid;
 
   // constructor optional ไม่ใส่ก็ได้ ใส่ uid ของ user จะแสดง user profile ตามนั้น
-  Profile({this.uid});
+  Profile([this.uid]);
 
   @override
   State<StatefulWidget> createState() {
@@ -18,11 +18,13 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  bool _isOwner = false;
   String _uid;
   Map<String, dynamic> _userProfile;
 
   @override
   void initState() {
+    print('=== this is Profile ===');
     _uid = widget.uid;
     if (_uid == null) {
       // ตรวจว่ามี props user id เข้ามาไหม ถ้าไม่มีให้ไปดึง user id ของเจ้าของ
@@ -30,12 +32,22 @@ class _ProfileState extends State<Profile> {
       readFile('userId').then((String userId) {
         setState(() {
           _uid = userId;
+          _isOwner = true;
         });
         // ดึงข้อมูล user คนนั้นจาก firestore
         Firestore.instance.collection('users').document(_uid).get().then((doc) {
           setState(() {
             _userProfile = doc.data;
           });
+        });
+      });
+    }
+    else {
+      print(_uid);
+      Firestore.instance.collection('users').document(_uid).get().then((doc) {
+        print(doc.data);
+        setState(() {
+          _userProfile = doc.data;
         });
       });
     }
@@ -104,10 +116,28 @@ class _ProfileState extends State<Profile> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : Column(
+          : ListView(
               children: <Widget>[
                 _buildProfileImage(),
                 _buildFullName(),
+                Container(
+                  margin: EdgeInsets.only(top: 10),
+                  child: ListTile(
+                    leading: Icon(Icons.cake),
+                    title: Text(_userProfile['birthdate'].toString()),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.email),
+                  title: Text(_userProfile['email']),
+                ),
+                _isOwner ? RaisedButton(
+                  child: Text('Edit Profile'),
+                  onPressed: () {},
+                ) : RaisedButton(
+                  child: Text('Add Friend!'),
+                  onPressed: () {},
+                )
               ],
             ),
     );

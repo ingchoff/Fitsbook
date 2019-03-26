@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
@@ -18,6 +19,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String _uid;
+  Map<String, dynamic> _userProfile;
 
   @override
   void initState() {
@@ -28,6 +30,12 @@ class _ProfileState extends State<Profile> {
       readFile('userId').then((String userId) {
         setState(() {
           _uid = userId;
+        });
+        // ดึงข้อมูล user คนนั้นจาก firestore
+        Firestore.instance.collection('users').document(_uid).get().then((doc) {
+          setState(() {
+            _userProfile = doc.data;
+          });
         });
       });
     }
@@ -41,7 +49,6 @@ class _ProfileState extends State<Profile> {
 
   Future<File> get _localFile async {
     final path = await _localPath;
-    print(path);
     return File('$path/data.txt');
   }
 
@@ -57,15 +64,52 @@ class _ProfileState extends State<Profile> {
     }
   }
 
+  Widget _buildProfileImage() {
+    // เอาไว้สร้างรูปโปรไฟล์
+    return Center(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        width: 140,
+        height: 140,
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: NetworkImage(_userProfile['profile']),
+                fit: BoxFit.cover),
+            borderRadius: BorderRadius.circular(80.0)),
+      ),
+    );
+  }
+
+  Widget _buildFullName() {
+    TextStyle _nameTextStyle = TextStyle(
+        color: Colors.black, fontSize: 28.0, fontWeight: FontWeight.w700);
+    return Column(
+      children: <Widget>[
+        Text(
+          _userProfile['dname'],
+          style: _nameTextStyle,
+        ),
+        Text(_userProfile['fname'] + ' ' + _userProfile['lname'])
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Profile'),
       ),
-      body: Center(
-        child: Text(_uid),
-      ),
+      body: _userProfile == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              children: <Widget>[
+                _buildProfileImage(),
+                _buildFullName(),
+              ],
+            ),
     );
   }
 }

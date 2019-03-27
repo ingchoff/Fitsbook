@@ -14,15 +14,23 @@ class NewFeed extends StatefulWidget {
 class _NewFeedState extends State<NewFeed> {
 
   String txt;
+  String uid;
 
   @override
   void initState() {
-    super.initState();
     //อ่านค่า email ของ uid ที่ signin เข้ามา ในไฟล์ data.txt
     // readFile('ชื่อ key ที่อยากดึง value มาใข้')
     readFile('dname').then((String value) {
-      txt = value;
+      setState(() {
+       txt = value; 
+      });
     });
+    readFile('userId').then((String value) {
+      setState(() {
+       uid = value; 
+      });
+    });
+    super.initState();
   }
 
   Future<String> get _localPath async {
@@ -40,9 +48,6 @@ class _NewFeedState extends State<NewFeed> {
       final file = await _localFile;
       // Read the file
       Map contents = json.decode(await file.readAsString());
-      setState(() {
-       txt = contents[key];
-      });
       print(contents); // พิม data ในรูปแบบ json บน console
       print(contents[key]); // พิม data ตาม key ที่เราใส่เข้าไปในรูปแบบ string บน console
       return contents[key]; //ส่งค่ากลับ ตาม key ที่เราใส่เข้าไปในรูปแบบ string
@@ -62,10 +67,7 @@ class _NewFeedState extends State<NewFeed> {
           child: Column(
             children: <Widget>[
               Text('Account Info: $txt'),
-              RaisedButton(
-                onPressed: () => readFile('userId'),
-                child: Text('data'),
-              ),
+              Text('userid: $uid')
             ],
           ),
         )

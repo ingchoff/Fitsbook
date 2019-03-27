@@ -113,7 +113,7 @@ class LoginState extends State<Login> {
             'noti_token':token
           },merge: true);
           writeFile(user,token); //save ค่า uid, email, token ลง data.txt
-          Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));//ถ้า Login สำเร็จจะไปที่หน้าหลักที่มีการดึงข้อมูลมาจาก local storage
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));//ถ้า Login สำเร็จจะไปที่หน้าหลักที่มีการดึงข้อมูลมาจาก local storage
         } else {
           setState(() {
             _isLoading = false;

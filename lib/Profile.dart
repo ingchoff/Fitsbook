@@ -4,6 +4,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
+import './Profile/Post.dart';
+import './Profile/ProfilePic.dart';
 
 class Profile extends StatefulWidget {
   final String uid;
@@ -21,10 +23,11 @@ class _ProfileState extends State<Profile> {
   bool _isOwner = false;
   String _uid;
   Map<String, dynamic> _userProfile;
+  Map<dynamic, dynamic> _posts = {};
+  bool isFinish = false;
 
   @override
   void initState() {
-    print('=== this is Profile ===');
     _uid = widget.uid;
     if (_uid == null) {
       // ตรวจว่ามี props user id เข้ามาไหม ถ้าไม่มีให้ไปดึง user id ของเจ้าของ
@@ -39,19 +42,43 @@ class _ProfileState extends State<Profile> {
           setState(() {
             _userProfile = doc.data;
           });
+          _getPosts(_uid).then((Map res) {
+            setState(() {
+              isFinish = true;
+            });
+          });
         });
       });
-    }
-    else {
-      print(_uid);
+    } else {
       Firestore.instance.collection('users').document(_uid).get().then((doc) {
-        print(doc.data);
         setState(() {
           _userProfile = doc.data;
+        });
+        _getPosts(_uid).then((Map res) {
+          setState(() {
+            isFinish = true;
+          });
         });
       });
     }
     super.initState();
+  }
+
+  Future<Map> _getPosts(String uid) async {
+    Map<dynamic, dynamic> posts = {};
+
+    QuerySnapshot doc = await Firestore.instance
+        .collection('posts')
+        .where('user', isEqualTo: uid)
+        .orderBy('dateCreated', descending: true)
+        .getDocuments();
+    doc.documents.forEach((DocumentSnapshot f) {
+      posts[f.documentID] = f.data;
+    });
+    setState(() {
+      _posts = posts;
+    });
+    return posts;
   }
 
   Future<String> get _localPath async {
@@ -76,22 +103,6 @@ class _ProfileState extends State<Profile> {
     }
   }
 
-  Widget _buildProfileImage() {
-    // เอาไว้สร้างรูปโปรไฟล์
-    return Center(
-      child: Container(
-        margin: EdgeInsets.symmetric(vertical: 8.0),
-        width: 140,
-        height: 140,
-        decoration: BoxDecoration(
-            image: DecorationImage(
-                image: NetworkImage(_userProfile['profile']),
-                fit: BoxFit.cover),
-            borderRadius: BorderRadius.circular(80.0)),
-      ),
-    );
-  }
-
   Widget _buildFullName() {
     TextStyle _nameTextStyle = TextStyle(
         color: Colors.black, fontSize: 28.0, fontWeight: FontWeight.w700);
@@ -108,38 +119,62 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-      ),
-      body: _userProfile == null
-          ? Center(
-              child: CircularProgressIndicator(),
-            )
-          : ListView(
-              children: <Widget>[
-                _buildProfileImage(),
-                _buildFullName(),
-                Container(
-                  margin: EdgeInsets.only(top: 10),
-                  child: ListTile(
-                    leading: Icon(Icons.cake),
-                    title: Text(_userProfile['birthdate'].toString()),
-                  ),
-                ),
-                ListTile(
-                  leading: Icon(Icons.email),
-                  title: Text(_userProfile['email']),
-                ),
-                _isOwner ? RaisedButton(
-                  child: Text('Edit Profile'),
-                  onPressed: () {},
-                ) : RaisedButton(
-                  child: Text('Add Friend!'),
-                  onPressed: () {},
-                )
-              ],
+    List<Widget> _list = _userProfile == null
+        ? null
+        : [
+            ProfilePics(diameter: 140, path: _userProfile['profile']),
+            _buildFullName(),
+            Container(
+              margin: EdgeInsets.only(top: 10),
+              child: ListTile(
+                leading: Icon(Icons.cake),
+                title: Text(_userProfile['birthdate'].toString()),
+              ),
             ),
-    );
+            ListTile(
+              leading: Icon(Icons.email),
+              title: Text(_userProfile['email']),
+            ),
+            _isOwner
+                ? RaisedButton(
+                    child: Text('Edit Profile'),
+                    onPressed: () {},
+                  )
+                : RaisedButton(
+                    child: Text('Add Friend!'),
+                    onPressed: () {},
+                  ),
+            _isOwner
+                ? RaisedButton(
+                    child: Text('Friends List'),
+                    onPressed: () {},
+                  )
+                : null
+          ];
+    if (_list != null)
+      _list.addAll(_posts.keys.map((k) {
+        return GestureDetector(
+          // link ไปยังโพสต์โดยการแก้ on tap function
+          onTap: () => print('navagate!'),
+          child: ProfilePosts(
+            profile: ProfilePics(diameter: 50, path: _userProfile['profile']),
+            dname: _userProfile['dname'],
+            detail: _posts[k]['detail'],
+            date: _posts[k]['dateCreated'],
+          ),
+        );
+      }));
+
+    Widget _profilePage = !isFinish
+        ? Center(child: CircularProgressIndicator())
+        : ListView(
+            children: _list,
+          );
+
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Profile'),
+        ),
+        body: _profilePage);
   }
 }

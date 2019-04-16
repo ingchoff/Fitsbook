@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import './Profile/Post.dart';
 import './Profile/ProfilePic.dart';
+import './FriendRequest/Friendlist.dart';
 
 class Profile extends StatefulWidget {
   final String uid;
@@ -163,7 +164,7 @@ class _ProfileState extends State<Profile> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Profile('qgp801RgwGZgVgHsGiabeo0axmM2')),
+                        MaterialPageRoute(builder: (context) => FriendList()),
                       );
                     },
                   )

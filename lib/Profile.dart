@@ -142,15 +142,32 @@ class _ProfileState extends State<Profile> {
                   )
                 : RaisedButton(
                     child: Text('Add Friend!'),
-                    onPressed: () {},
+                    onPressed: () {
+                      readFile('userId').then((String userId) {
+                        Firestore
+                          .instance
+                          .collection('users')
+                          .document(_uid)
+                          .collection('requests')
+                          .document(userId)
+                          .setData({
+                            'status': 'waiting'
+                          });
+                      });
+                    },
                   ),
             _isOwner
                 ? RaisedButton(
                     child: Text('Friends List'),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Profile('qgp801RgwGZgVgHsGiabeo0axmM2')),
+                      );
+                    },
                   )
                 : null
-          ];
+          ].where((Widget w) => w != null).toList();
     if (_list != null)
       _list.addAll(_posts.keys.map((k) {
         return GestureDetector(

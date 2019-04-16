@@ -32,6 +32,8 @@ class LoginState extends State<Login> {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message){
         print('on message $message');
+        final snackBar = SnackBar(content: Text(message['notification'].body));
+        Scaffold.of(context).showSnackBar(snackBar);
       },
       onResume: (Map<String, dynamic> message){
         print('on resume $message');
@@ -112,6 +114,11 @@ class LoginState extends State<Login> {
           store.collection('users').document(user.uid).setData({ //add noti_token เก็บบน cloud firestore
             'noti_token':token
           },merge: true);
+          _firebaseMessaging.onTokenRefresh.listen((String token) {
+            store.collection('users').document(user.uid).setData({ //add noti_token เก็บบน cloud firestore
+              'noti_token':token
+            },merge: true);
+          });
           writeFile(user,token); //save ค่า uid, email, token ลง data.txt
           Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));//ถ้า Login สำเร็จจะไปที่หน้าหลักที่มีการดึงข้อมูลมาจาก local storage
         } else {

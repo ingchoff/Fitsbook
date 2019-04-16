@@ -29,6 +29,6 @@ class ProfilePics extends StatelessWidget {
                 fit: BoxFit.cover),
             borderRadius: BorderRadius.circular(80.0)),
       ),
-    );;
+    );
   }
 }

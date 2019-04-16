@@ -39,7 +39,7 @@ class _FriendRequest extends State<FriendRequest> {
   }
   
   void onAccept(String key) async {
-    print(key);
+    // ทำการยอมรับเพื่อน
     String userId = await readFile('userId');
     requests.remove(key);
     Firestore
@@ -54,6 +54,7 @@ class _FriendRequest extends State<FriendRequest> {
   }
 
   Future<Map<String, dynamic>> getRequests() async {
+    // ดึงข้อมูลคำขอเป็นเพื่อน ที่มีสถานะเป็น waiting
     Map<String, dynamic> _requests = {};
 
     String userId = await readFile('userId');
@@ -62,6 +63,7 @@ class _FriendRequest extends State<FriendRequest> {
         .document(userId)
         .collection('requests')
         .where("status", isEqualTo: "waiting")
+        .orderBy('dateCreated', descending: true)
         .getDocuments();
 
     for (DocumentSnapshot f in docs.documents) {

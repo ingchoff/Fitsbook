@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
@@ -22,6 +23,8 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   bool _isOwner = false;
+  bool _isFriend = false;
+  int _isRequest = 0;
   String _uid;
   Map<String, dynamic> _userProfile;
   Map<dynamic, dynamic> _posts = {};
@@ -52,6 +55,42 @@ class _ProfileState extends State<Profile> {
       });
     } else {
       Firestore.instance.collection('users').document(_uid).get().then((doc) {
+        // เช็คว่าเป็นเพื่อนกันอยู่ไหม
+        // เช็คว่ามีการรีเควสเป็นเฟรนด์ไปแล้วหรือไม่
+        List<dynamic> friends = doc.data['friends'];
+        readFile('userId').then((String userId) {
+          if (friends != null && friends.contains(userId))
+            setState(() {
+              _isFriend = true;
+            });
+          else {
+            // check ว่ามีการส่งรีเควสไปไหม ถ้าเจ้าของเครื่องส่งไป -1 ถ้าเขาส่งมา 1 ถ้าเป็น 0 คือไม่มีอะไรเกิดขึ้น
+            CollectionReference ref = Firestore.instance.collection('users');
+            ref
+                .document(userId)
+                .collection('requests')
+                .document(_uid)
+                .get()
+                .then((DocumentSnapshot d) {
+              if (d.exists)
+                setState(() {
+                  _isRequest = 1;
+                });
+            });
+            ref
+                .document(_uid)
+                .collection('requests')
+                .document(userId)
+                .get()
+                .then((DocumentSnapshot d) {
+              if (d.exists)
+                setState(() {
+                  _isRequest = -1;
+                });
+            });
+          }
+        });
+
         setState(() {
           _userProfile = doc.data;
         });
@@ -120,61 +159,125 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> _list = _userProfile == null
-        ? null
-        : [
-            ProfilePics(diameter: 140, path: _userProfile['profile']),
-            _buildFullName(),
-            Container(
-              margin: EdgeInsets.only(top: 10),
-              child: ListTile(
-                leading: Icon(Icons.cake),
-                title: Text(_userProfile['birthdate'].toString()),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.email),
-              title: Text(_userProfile['email']),
-            ),
-            _isOwner
-                ? RaisedButton(
-                    child: Text('Edit Profile'),
-                    onPressed: () {},
-                  )
-                : RaisedButton(
-                    child: Text('Add Friend!'),
-                    onPressed: () {
-                      readFile('userId').then((String userId) {
-                        Firestore
-                          .instance
-                          .collection('users')
-                          .document(_uid)
-                          .collection('requests')
-                          .document(userId)
-                          .setData({
-                            'status': 'waiting',
-                            'dateCreated': DateTime.now().millisecondsSinceEpoch
-                          });
-                      });
-                    },
-                  ),
-            _isOwner
-                ? RaisedButton(
-                    child: Text('Friends List'),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => FriendList()),
-                      );
-                    },
-                  )
-                : null
-          ].where((Widget w) => w != null).toList();
+    // ตรงนี้เอาไว้สร้างปุ่มว่าเป็นหน้าของเจ้าของเองแสดงปุ่มแบบนึง
+    List<Widget> allButton;
+    if (_isOwner) {
+      allButton = [
+        RaisedButton(
+          child: Text('Edit Profile'),
+          // todo: nav ไปหน้า edit profile ตรงงน้
+          onPressed: () {},
+        ),
+        RaisedButton(
+          child: Text('Friends List'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FriendList()),
+            );
+          },
+        )
+      ];
+    } else if (_isFriend) {
+      allButton = [
+        RaisedButton(
+          child: Text('Chat'),
+          onPressed: () {
+            print('chat');
+          },
+        ),
+      ];
+    } else if (_isRequest == 1) {
+      allButton = [
+        Center(
+          child: Text(
+            'You have a friend request from this user',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+        ),
+        RaisedButton(
+          child: Text('Accept'),
+          onPressed: () async {
+            FirebaseUser user = await FirebaseAuth.instance.currentUser();
+            await Firestore
+              .instance
+              .collection('users')
+              .document(user.uid)
+              .collection('requests')
+              .document(_uid)
+              .setData({
+                'status': 'accepted',
+              }, merge: true);
+              setState(() {
+               _isFriend = true; 
+              });
+          },
+        ),
+      ];
+    } else if (_isRequest == -1) {
+      allButton = [
+        Center(
+          child: Text(
+            'You have sent this user a friend request',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          ),
+        )
+      ];
+    } else {
+      allButton = [
+        RaisedButton(
+          child: Text('Add friend!'),
+          onPressed: () async {
+            FirebaseUser user = await FirebaseAuth.instance.currentUser();
+            await Firestore
+              .instance
+              .collection('users')
+              .document(_uid)
+              .collection('requests')
+              .document(user.uid)
+              .setData({
+                'status': 'waiting',
+                'dateCreated': DateTime.now().millisecondsSinceEpoch
+              }, merge: true);
+              setState(() {
+               _isRequest = -1;
+              });
+          },
+        ),
+      ];
+    }
+
+    List<Widget> _list;
+    if (_userProfile != null) {
+      _list = [
+        ProfilePics(diameter: 140, path: _userProfile['profile']),
+        _buildFullName(),
+        Container(
+          margin: EdgeInsets.only(top: 10),
+          child: ListTile(
+            leading: Icon(Icons.cake),
+            title: Text(_userProfile['birthdate'].toString()),
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.email),
+          title: Text(_userProfile['email']),
+        ),
+      ];
+      _list.addAll(allButton == null ? [] : allButton);
+      _list = _list.where((Widget w) => w != null).toList();
+    }
+
     if (_list != null)
       _list.addAll(_posts.keys.map((k) {
         return GestureDetector(
           // link ไปยังโพสต์โดยการแก้ on tap function
-          onTap: () => print('navagate!'),
+          onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        Profile('lhEcuY2c6hQCnKoJrpRtYyJzSfA3')),
+              ),
           child: ProfilePosts(
             profile: ProfilePics(diameter: 50, path: _userProfile['profile']),
             dname: _userProfile['dname'],

@@ -76,7 +76,7 @@ class _FriendListState extends State<FriendList> {
               );
             return allReq.keys.length == 0
                 ? Center(
-                    child: Text('No Friend Request!'),
+                    child: Text('You have no friend now!'),
                   )
                 : ListView.builder(
                     itemCount: allReq.keys.length,

@@ -151,7 +151,8 @@ class _ProfileState extends State<Profile> {
                           .collection('requests')
                           .document(userId)
                           .setData({
-                            'status': 'waiting'
+                            'status': 'waiting',
+                            'dateCreated': DateTime.now().millisecondsSinceEpoch
                           });
                       });
                     },

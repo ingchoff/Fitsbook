@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './Holder.dart';
 import './NewFeed.dart';
 import './Profile.dart';
+import './FriendRequest.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class _MainPageState extends State<MainPage> {
   int index = 0;
   List<Widget> _children = [
       NewFeed(),
-      Holder('Notify'),
+      FriendRequest(),
       Holder('Map'),
       Profile(),
       Holder('Settings')

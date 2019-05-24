@@ -5,6 +5,9 @@ import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 
 class NewFeed extends StatefulWidget {
+  final String uid;
+  NewFeed({this.uid});
+  
   @override
   State<StatefulWidget> createState() {
     return _NewFeedState();
@@ -13,23 +16,30 @@ class NewFeed extends StatefulWidget {
 
 class _NewFeedState extends State<NewFeed> {
 
-  String txt;
-  String uid;
+  String _txt;
+  String _uid;
 
   @override
   void initState() {
-    //อ่านค่า email ของ uid ที่ signin เข้ามา ในไฟล์ data.txt
-    // readFile('ชื่อ key ที่อยากดึง value มาใข้')
-    readFile('dname').then((String value) {
-      setState(() {
-       txt = value; 
+    _uid = widget.uid;
+    if (_uid == null) {
+      // ตรวจว่ามี props user id เข้ามาไหม ถ้าไม่มีให้ไปดึง user id ของเจ้าของ
+      _uid = '';
+      readFile('userId').then((String userId) {
+        setState(() {
+          _uid = userId;
+        });
       });
-    });
-    readFile('userId').then((String value) {
-      setState(() {
-       uid = value; 
+    }
+    if (_txt == null) {
+      // ตรวจว่ามี props user id เข้ามาไหม ถ้าไม่มีให้ไปดึง user id ของเจ้าของ
+      _txt = '';
+      readFile('email').then((String userId) {
+        setState(() {
+          _txt = userId;
+        });
       });
-    });
+    }
     super.initState();
   }
 
@@ -66,8 +76,8 @@ class _NewFeedState extends State<NewFeed> {
           padding: EdgeInsets.only(top: 100),
           child: Column(
             children: <Widget>[
-              Text('Account Info: $txt'),
-              Text('userid: $uid')
+              Text('Account Info:' + _txt),
+              Text('userid:' + _uid)
             ],
           ),
         )

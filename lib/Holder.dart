@@ -13,7 +13,6 @@ class Holder extends StatelessWidget {
   void _logout(context) async {
     await auth.signOut();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
-    // Navigator.of(context).pop();
   }
 
   @override

@@ -166,7 +166,8 @@ class _ProfileState extends State<Profile> {
         RaisedButton(
           child: Text('Edit Profile'),
           // todo: nav ไปหน้า edit profile ตรงงน้
-          onPressed: () {},
+          onPressed: () {
+          },
         ),
         RaisedButton(
           child: Text('Friends List'),
@@ -276,7 +277,7 @@ class _ProfileState extends State<Profile> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        Profile('lhEcuY2c6hQCnKoJrpRtYyJzSfA3')),
+                        Profile(_uid)),
               ),
           child: ProfilePosts(
             profile: ProfilePics(diameter: 50, path: _userProfile['profile']),

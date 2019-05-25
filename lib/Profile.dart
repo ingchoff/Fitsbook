@@ -287,7 +287,7 @@ class _ProfileState extends State<Profile> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        Profile('lhEcuY2c6hQCnKoJrpRtYyJzSfA3')),
+                        Profile(_uid)),
               ),
           child: ProfilePosts(
             profile: ProfilePics(diameter: 50, path: _userProfile['profile']),

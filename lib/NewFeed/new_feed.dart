@@ -154,6 +154,7 @@ class NewFeedState extends State<NewFeed> {
                   new Container(
                     margin: EdgeInsets.only(top: 24.0),              
                     width: 300.0,
+                    height: 400.0,
                     decoration: BoxDecoration(
                       color: Colors.lightGreen[200],
                       border: Border.all(

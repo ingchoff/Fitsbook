@@ -1,16 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import './Holder.dart';
-import './NewFeed.dart';
+import './NewFeed/new_feed.dart';
 import './Profile.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({
-    Key key,
-    @required this.user
-  }) : super(key: key);
-  final FirebaseUser user;
-  
   @override
   State<StatefulWidget> createState() {
     return _MainPageState();

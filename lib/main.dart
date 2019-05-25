@@ -13,6 +13,9 @@ class MyApp extends StatelessWidget {
       home: Scaffold(
         body: Login(),
       ),
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
     );
   }
 }

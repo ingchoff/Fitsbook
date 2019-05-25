@@ -123,7 +123,7 @@ class RegisterState extends State<Register> {
               keyboardType: TextInputType.datetime,
               decoration: InputDecoration(
                 hintText: 'yyyymmdd',
-                labelText: 'birthday',
+                labelText: 'Birth Date',
                 prefixIcon: Icon(Icons.date_range)
               ),
             ),
@@ -154,7 +154,7 @@ class RegisterState extends State<Register> {
                 controller: email,
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
-                  labelText: 'email',
+                  labelText: 'E-mail',
                   prefixIcon: Icon(Icons.email)
                 ),
               ),
@@ -171,7 +171,7 @@ class RegisterState extends State<Register> {
               keyboardType: TextInputType.text,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'password',
+                labelText: 'Password',
                 prefixIcon: Icon(Icons.https)
                 ),
               ),
@@ -187,7 +187,7 @@ class RegisterState extends State<Register> {
               keyboardType: TextInputType.text,
               obscureText: true,
               decoration: InputDecoration(
-                labelText: 'confirm password',
+                labelText: 'Confirm Password',
                 prefixIcon: Icon(Icons.https)
                 ),
               ),
@@ -196,7 +196,7 @@ class RegisterState extends State<Register> {
               child: SizedBox(
               height: 50,
               child: RaisedButton(
-                color: Colors.amberAccent,
+                color: Colors.lightGreen,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
@@ -215,7 +215,10 @@ class RegisterState extends State<Register> {
     if (_isLoading) {
       return CircularProgressIndicator();
     }else {
-      return new Text('Register');
+      return new Text('Register'
+      ,style: TextStyle(
+        color: Colors.white
+      ),);
     }
   }
 

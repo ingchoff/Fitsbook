@@ -1,4 +1,6 @@
-import './login.dart';
+import 'package:fitsbook/Chat/homepage.dart';
+
+import './Login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -11,18 +13,27 @@ class Holder extends StatelessWidget {
   void _logout(context) async {
     await auth.signOut();
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+    // Navigator.of(context).pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Center(
+          child: Image.asset('resources/logo.PNG', fit: BoxFit.cover, width: 25,)
+        )
       ),
       body: Column(children: <Widget>[
         Center(child: Text(title)),
         RaisedButton(child: Text('Log Out'), onPressed: () => _logout(context),)
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+        },
+        child: Icon(Icons.chat),
       ),
     );
   }

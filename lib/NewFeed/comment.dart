@@ -70,15 +70,23 @@ class CommentState extends State<Comment> {
                 double userSize = 18;
                 double placeSize = 10;
                 double frameSize = 480;
+
                 if (snapshot.data.documents[widget.no]['place'] != null || snapshot.data.documents[widget.no]['place'] != '') {
+                  userSize = 18;
+                  placeSize = 0;
+                } 
+                else {
                   userSize = 12;
                   place = 'อยู่ที่ ' + snapshot.data.documents[widget.no]['place'];
                   if (place.length > 40) { place = place.substring(0, 40) + '...'; }
-                }
-                if (place == "") {
-                  place = "";
+                } 
+                      
+                if (place == '') {
+                  userSize = 18;
                   placeSize = 0;
                 }
+
+                
                 return new Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children : <Widget>[

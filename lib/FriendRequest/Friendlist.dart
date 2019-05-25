@@ -62,7 +62,7 @@ class _FriendListState extends State<FriendList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Friends Requests'),
+        title: Text('Friends'),
       ),
       body: Container(
         margin: EdgeInsets.fromLTRB(8, 5, 8, 5),
@@ -70,11 +70,11 @@ class _FriendListState extends State<FriendList> {
           future: getRequests(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             var allReq = snapshot.data;
-            if (allReq == null)
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            return allReq.keys.length == 0
+            // if (allReq == null)
+            //   return Center(
+            //     child: CircularProgressIndicator(),
+            //   );
+            return allReq == null || allReq.keys.length == 0
                 ? Center(
                     child: Text('You have no friend now!'),
                   )

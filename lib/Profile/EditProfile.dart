@@ -109,28 +109,35 @@ class UpdatedFormState extends State<UpdatedForm> {
   }
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
         appBar: AppBar(
           title: Text('Edit profile'),
           centerTitle: true,
         ),
-        body: StreamBuilder(
-          stream: Firestore.instance.collection('users').snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData);
-            return Center(
-              child: FlatButton(
-                child: Text('Update Profile'),
-                textColor: Colors.white,
-                color: Colors.lightBlue,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
-                onPressed: () {
-                  updateDialog(context,  snapshot.data.documents[0].documentID);
-                },
-              )
-            );
-          }
-        )
+        body: Form(
+          child: ListView(
+            shrinkWrap: true,
+            padding: EdgeInsets.only(left: 24.0, right: 24.0),
+            
+          ),
+        ),
+        // body: StreamBuilder(
+        //   stream: Firestore.instance.collection('users').snapshots(),
+        //   builder: (context, snapshot) {
+        //     if (snapshot.hasData);
+        //     return Center(
+        //       child: FlatButton(
+        //         child: Text('Update Profile'),
+        //         textColor: Colors.white,
+        //         color: Colors.lightBlue,
+        //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+        //         onPressed: () {
+        //           updateDialog(context,  snapshot.data.documents[0].documentID);
+        //         },
+        //       )
+        //     );
+        //   }
+        // )
     );
   }
 

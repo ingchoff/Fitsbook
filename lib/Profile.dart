@@ -164,23 +164,34 @@ class _ProfileState extends State<Profile> {
     List<Widget> allButton;
     if (_isOwner) {
       allButton = [
-        RaisedButton(
-          child: Text('Edit Profile'),
-          // todo: nav ไปหน้า edit profile ตรงงน้
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatedForm()));
-          },
+        ButtonTheme(
+          buttonColor: Colors.green,
+          child: RaisedButton(
+            child: 
+            Text('Edit Profile'
+            ,style: TextStyle(color: Colors.white),),
+            // todo: nav ไปหน้า edit profile ตรงงน้
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatedForm()));
+            },
+          ),
         ),
-        RaisedButton(
-          child: Text('Friends List'),
+        ButtonTheme(
+          buttonColor: Colors.green,
+          child: RaisedButton(
+            child: 
+            Text('Friends List'
+            ,style: TextStyle(color: Colors.white),),
+          // todo: nav ไปหน้า edit profile ตรงงน้
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => FriendList()),
             );
           },
-        )
-      ];
+          ),
+        ),
+        ];
     } else if (_isFriend) {
       allButton = [
         RaisedButton(

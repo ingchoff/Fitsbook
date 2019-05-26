@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitsbook/NewFeed/new_feed.dart';
 import 'package:fitsbook/PostScreen/ui/places_screen.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../services/place_service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,6 +22,8 @@ class PostForm extends StatefulWidget {
 
 class PostFormState extends State {
   final _formKey = GlobalKey<FormState>();
+  List<Marker> allMarkers = [];
+  GoogleMapController _controller;
   String post; // เนื้อหาของโพสต์
   File _image; // ไฟล์รูปภาพ
   static String tagged = ""; // สถานที่
@@ -47,6 +50,12 @@ class PostFormState extends State {
   Future getAllPost() async {
     QuerySnapshot data = await Firestore.instance.collection('posts').orderBy('dateCreated').getDocuments();
     return data.documents;
+  }
+
+  void mapCreated(controller) {
+    setState(() {
+      _controller = controller;
+    });
   }
 
   Map<String, double> currentLocation = new Map();
@@ -124,6 +133,24 @@ class PostFormState extends State {
                   },
                 ),
               ],
+            ),
+
+            SizedBox(
+              width: 250,
+              height: 250,
+              child: Stack(
+                children: [Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: GoogleMap(
+                    initialCameraPosition:
+                        CameraPosition(target: LatLng(40.7128, -74.0060), zoom: 12.0),
+                    markers: Set.from(allMarkers),
+                    onMapCreated: mapCreated,
+                  ),
+                ),
+                ]
+              ),
             ),
 
             //แสดงรูปที่จะอัพโหลด

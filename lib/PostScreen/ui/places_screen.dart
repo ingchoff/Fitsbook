@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 class PlacesScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return PlacesScreenState();
   }
 }
@@ -23,7 +22,6 @@ class PlacesScreenState extends State<PlacesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text("Nearby Places"),
@@ -71,6 +69,9 @@ class PlacesScreenState extends State<PlacesScreen> {
     } else {
       List<Widget> placeList = [];
         placeList.add(
+          Text(address)
+        );
+        placeList.add(
           SizedBox(
               width: 250,
               height: 250,
@@ -90,9 +91,9 @@ class PlacesScreenState extends State<PlacesScreen> {
               ),
             ),
         );
-        placeList.add(
-          Text()
-        );
+        // placeList.add(
+        //   Text()
+        // );
         for (dynamic i in _places) {
         placeList.add(
           Card(

@@ -2,11 +2,13 @@ import 'package:fitsbook/Profile/ProfilePic.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:io';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final Firestore store = Firestore.instance;
@@ -33,6 +35,8 @@ class UpdatedFormState extends State<UpdatedForm> {
   Map<String, dynamic> _userProfile;
   String _uid;
   String _image;
+  final formatter1 = new DateFormat('yyyyMMdd');
+  DateTime birthdate;
   // String dname;
   // String fname;
   // String gender;
@@ -243,19 +247,19 @@ class UpdatedFormState extends State<UpdatedForm> {
                 new Text('หญิง')
               ],
             ),
-            TextFormField(
-              validator: (value) {
-                if (value.length != 8) {
-                  return 'รุปแบบวัน เดือน ปี ไม่ถูกต้อง';
-                }
-              },
-              controller: birthday,
-              keyboardType: TextInputType.datetime,
+            DateTimePickerFormField(
+              inputType: InputType.date,
+              format: DateFormat("yyyy-MM-dd"),
+              initialDate: DateTime(2000, 1, 1),
+              editable: false,
               decoration: InputDecoration(
-                hintText: 'yyyymmdd',
-                labelText: 'birthday',
-                prefixIcon: Icon(Icons.date_range)
+                labelText: 'Birth Date',
+                hasFloatingPlaceholder: false
               ),
+              onChanged: (dt) {
+                setState(() => birthdate = dt);
+                print(formatter1.format(birthdate));
+              },
             ),
             Padding(
               padding: EdgeInsets.only(top: 20, bottom: 20),

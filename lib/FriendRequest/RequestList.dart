@@ -54,6 +54,8 @@ class _RequestListState extends State<RequestList> {
           await Firestore.instance.collection('users').document(f).get();
       _friendsLists[f]['dname'] = profileDocs.data['dname'];
       _friendsLists[f]['path'] = profileDocs.data['profile'];
+      DocumentSnapshot requests = await Firestore.instance.collection('users').document(f).collection('requests').document(userId).get();
+      print(requests.data['status']);
     }
 
     print(_friendsLists);
@@ -65,7 +67,7 @@ class _RequestListState extends State<RequestList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Friends'),
+        title: Text('Request'),
       ),
       body: Container(
         margin: EdgeInsets.fromLTRB(8, 5, 8, 5),

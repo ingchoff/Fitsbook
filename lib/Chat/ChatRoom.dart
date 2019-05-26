@@ -99,7 +99,7 @@ class ChatRoomState extends State<ChatRoom> {
   void _handleSubmitted(String text) {
     _textController.clear();
 
-    if (text == '') {
+    if (text != '') {
       Firestore.instance
           .collection('chats')
           .document(chatroomName)

@@ -26,7 +26,8 @@ class PostFormState extends State {
   GoogleMapController _controller;
   String post; // เนื้อหาของโพสต์
   File _image; // ไฟล์รูปภาพ
-  static String tagged = ""; // สถานที่
+  static String tagged = "";
+   // สถานที่
 
   //ฟังชั่นถ่ายรูป
   Future getImageCamera() async {
@@ -135,24 +136,6 @@ class PostFormState extends State {
               ],
             ),
 
-            SizedBox(
-              width: 250,
-              height: 250,
-              child: Stack(
-                children: [Container(
-                  height: MediaQuery.of(context).size.height,
-                  width: MediaQuery.of(context).size.width,
-                  child: GoogleMap(
-                    initialCameraPosition:
-                        CameraPosition(target: LatLng(40.7128, -74.0060), zoom: 12.0),
-                    markers: Set.from(allMarkers),
-                    onMapCreated: mapCreated,
-                  ),
-                ),
-                ]
-              ),
-            ),
-
             //แสดงรูปที่จะอัพโหลด
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -240,8 +223,8 @@ class PostFormState extends State {
                       'detail': post, //ข้อความที่โพสต์
                       'user': userId, //User สมมุติของ Q 
                       'place': tagged, //ชื่อสถานที่
-                      'latitude':currentLocation['latitude'], // ละติจูด
-                      'longitude':currentLocation['longitude'], // ลองจิจูด
+                      'latitude': PlacesScreenState.position.latitude, // ละติจูด
+                      'longitude':PlacesScreenState.position.longitude, // ลองจิจูด
                       'photo': 'posts' + '/' + docId.documentID + '/post'}
                   );
 
@@ -253,15 +236,15 @@ class PostFormState extends State {
             ),
            
             //เช็ด Latitude และ Longitude (เดี๋ยวลบออก)
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Lat/Lng: ${currentLocation["latitude"]} / ${currentLocation["longitude"]}',
-                  style: TextStyle(fontSize: 20.0, color: Colors.blueAccent),
-                )
-              ],
-            ),
+            // Column(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: <Widget>[
+            //     Text(
+            //       'Lat/Lng: ${currentLocation["latitude"]} / ${currentLocation["longitude"]}',
+            //       style: TextStyle(fontSize: 20.0, color: Colors.blueAccent),
+            //     )
+            //   ],
+            // ),
           ],
         ),
       ),

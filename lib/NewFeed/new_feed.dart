@@ -612,16 +612,6 @@ class NewFeedState extends State<NewFeed> {
             ),
           ), ]
       ),
-      
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen(users: [
-            'MaqqJx6JxvNAQy5nPWe2CEiahOl1',
-            'qgp801RgwGZgVgHsGiabeo0axmM2'
-          ],)));
-        },
-        child: Icon(Icons.chat),
-      ),
     );
   }
   

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final Firestore store = Firestore.instance;
@@ -23,13 +24,14 @@ class RegisterState extends State<Register> {
   final dname =TextEditingController();
   final email = TextEditingController();
   String sex = 'male';
-  final birthday = TextEditingController();
   final password = TextEditingController();
   final conPassword = TextEditingController();
   bool _isLoading = false;
   bool _notHaveDname = false;
-  final formatter = new DateFormat('yyyy-MM-dd kk:mm');
+  final formatter1 = new DateFormat('yyyy-MM-dd kk:mm');
+  final formatter2 = new DateFormat('yyyyMMdd');
   String txt;
+  DateTime birthdate;
 
   @override
   void dispose() {
@@ -118,14 +120,19 @@ class RegisterState extends State<Register> {
                 new Text('หญิง')
               ],
             ),
-            TextFormField(
-              controller: birthday,
-              keyboardType: TextInputType.datetime,
+            DateTimePickerFormField(
+              inputType: InputType.date,
+              format: DateFormat("yyyy-MM-dd"),
+              initialDate: DateTime(2000, 1, 1),
+              editable: false,
               decoration: InputDecoration(
-                hintText: 'yyyymmdd',
                 labelText: 'Birth Date',
-                prefixIcon: Icon(Icons.date_range)
+                hasFloatingPlaceholder: false
               ),
+              onChanged: (dt) {
+                setState(() => birthdate = dt);
+                print(formatter2.format(birthdate));
+              },
             ),
             Padding(
               padding: EdgeInsets.only(top: 0),
@@ -267,8 +274,8 @@ class RegisterState extends State<Register> {
               'gender':sex,
               'email':email.text,
               'dname':dname.text,
-              'birthdate': int.parse(birthday.text),
-              'joinDate':formatter.format(DateTime.now()),
+              'birthdate': int.parse(formatter2.format(birthdate)),
+              'joinDate':formatter1.format(DateTime.now()),
               'profile':""});
             setState(() {
             _isLoading = false; 

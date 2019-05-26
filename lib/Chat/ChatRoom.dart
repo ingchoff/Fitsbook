@@ -47,15 +47,42 @@ class ChatRoomState extends State<ChatRoom> {
     }
 
     CollectionReference refs = Firestore.instance.collection('chats');
-    QuerySnapshot docs =
-        await refs.where('users', isEqualTo: widget.users).getDocuments();
+    QuerySnapshot docs = await refs
+        .where('users', arrayContains: widget.users[0])
+        .getDocuments();
 
-    if (docs.documents.length == 0) {
+    dynamic allChatroom = docs.documents.where((DocumentSnapshot chatRoom) {
+      bool isContainAllUsers = true;
+
+      for (String user in widget.users) {
+        if (!chatRoom.data['users'].contains(user)) isContainAllUsers = false;
+      }
+
+      bool exp = chatRoom.data['users'].length == widget.users.length &&
+          isContainAllUsers;
+      return exp;
+    }).toList();
+  
+    if (allChatroom.length == 0) {
       refs.document().setData({'users': widget.users});
-      docs = await refs.where('users', isEqualTo: widget.users).getDocuments();
+      QuerySnapshot docs = await refs
+        .where('users', arrayContains: widget.users[0])
+        .getDocuments();
+
+    allChatroom = docs.documents.where((DocumentSnapshot chatRoom) {
+      bool isContainAllUsers = true;
+
+      for (String user in widget.users) {
+        if (!chatRoom.data['users'].contains(user)) isContainAllUsers = false;
+      }
+
+      bool exp = chatRoom.data['users'].length == widget.users.length &&
+          isContainAllUsers;
+      return exp;
+    }).toList();
     }
 
-    chatroomName = docs.documents[0].documentID;
+    chatroomName = allChatroom[0].documentID;
 
     _listenerOpen();
 

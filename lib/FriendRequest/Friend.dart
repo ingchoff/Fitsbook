@@ -29,10 +29,6 @@ class Friend extends StatelessWidget {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 )
               ],
-            ),
-            RaisedButton(
-              child: Text('Chat'),
-              onPressed: () {},
             )
           ],
         ),

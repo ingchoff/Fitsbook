@@ -27,13 +27,7 @@ class Holder extends StatelessWidget {
         Center(child: Text(title)),
         RaisedButton(child: Text('Log Out'), onPressed: () => _logout(context),)
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
-        },
-        child: Icon(Icons.chat),
-      ),
+      )
     );
   }
 }

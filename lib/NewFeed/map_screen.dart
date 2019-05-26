@@ -38,7 +38,7 @@ class MapScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("Google Map"),
       ),
-      body: GoogleMap(
+      body: map_lat == 0.0 && map_long == 0.0? Center(child: Text("This post doesn't allow location detector"),) : GoogleMap(
         initialCameraPosition: CameraPosition(
           target: LatLng(map_lat, map_long), 
           zoom: 15

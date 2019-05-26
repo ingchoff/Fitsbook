@@ -410,7 +410,8 @@ class NewFeedState extends State<NewFeed> {
                                                 // color: Colors.green,
                                                 onPressed: () {
                                                   Navigator.push(context, MaterialPageRoute(builder: (context) => Comment(title: snapshot.data[i]['detail'],no: i,
-                                                  userPic: userPic, userId: userId, lat: snapshot.data[i]['latitude'], long: snapshot.data[i]['longitude'])));
+                                                  userPic: userPic, userId: userId, lat: snapshot.data[i]['latitude'] == 0? 0.0 : snapshot.data[i]['latitude']
+                                                  , long: snapshot.data[i]['longitude'] == 0? 0.0 : snapshot.data[i]['longitude'])));
                                                 }
                                               ),
                                               Text("    "),

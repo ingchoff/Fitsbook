@@ -391,8 +391,8 @@ class NewFeedState extends State<NewFeed> {
                                           // รูปโพสต์
                                           urlPicPost == null || urlPicPost == ''
                                           ? new SizedBox(
-                                            width: 20,
-                                            height: 20,
+                                            width: 0,
+                                            height: 0,
                                           )
                                           : new Image.network(
                                             urlPicPost,

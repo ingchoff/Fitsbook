@@ -1,4 +1,6 @@
+import 'package:fitsbook/Login.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FeatureList extends StatefulWidget {
   @override
@@ -9,6 +11,7 @@ class FeatureList extends StatefulWidget {
 
 class FeatureListState extends State<FeatureList> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void dispose() {
@@ -17,12 +20,17 @@ class FeatureListState extends State<FeatureList> {
     super.dispose();
   }
 
+  void _logout(context) async {
+    await auth.signOut();
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Login()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('Register'),
+        title: Text('Feature List'),
         centerTitle: true,
       ),
       body: ListView(
@@ -74,6 +82,15 @@ class FeatureListState extends State<FeatureList> {
               ),
             )
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: () => _logout(context),
+                child: Text('Logout'),
+              )
+            ],
+          )
         ],
       )
     );

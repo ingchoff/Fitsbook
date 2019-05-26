@@ -63,11 +63,25 @@ class UpdatedFormState extends State<UpdatedForm> {
     }
   }
 
-  Widget setUpButtonChild() {
+  Widget setUpImage() {
     if (_isLoading) {
+      // return CircleAvatar(
+      //         radius: 100.0,
+      //         backgroundColor: Colors.white,
+      //       );
       return CircularProgressIndicator();
-    }else {
-      return new Text('Update Profile', style: TextStyle(color: Colors.white),);
+    } else {
+      return GestureDetector(
+              onTap: () {
+                getImage(_uid);
+              },
+              child: CircleAvatar(
+                  radius: 100.0,
+                  backgroundImage:
+                  NetworkImage(_image),
+                  backgroundColor: Colors.transparent,
+                )
+              );
     }
   }
 
@@ -84,9 +98,6 @@ class UpdatedFormState extends State<UpdatedForm> {
     final formState = _formkey.currentState;
     if(formState.validate()) {
       formState.save();
-      setState(() {
-       _isLoading = true;
-      });
       String txt;
       QuerySnapshot users = await store.collection('users').getDocuments();
       for(var i=0;i<users.documents.length;i++) {
@@ -115,14 +126,8 @@ class UpdatedFormState extends State<UpdatedForm> {
         _userProfile['birthdate'] = birthday.text;
         _userProfile['gender'] = gender.text;
         _userProfile['profile'] = _image;
-        setState(() {
-          _isLoading = false; 
-        });
         Navigator.of(context).pop();
       } else {
-        setState(() {
-          _isLoading = false;
-        });
         scaffoldState.showSnackBar(new SnackBar(
           content: new Text('Display Name นี้ถูกใช้แล้ว'),
         ));
@@ -132,11 +137,21 @@ class UpdatedFormState extends State<UpdatedForm> {
 
   Future getImage(_uid) async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    print(image.length);
+    if (image.length == 0) {
+      setState(() {
+        _isLoading = true;
+      });
+    }
     final StorageReference firebaseStorageRef =
         FirebaseStorage.instance.ref().child('profile/${_uid}/profile');
     final StorageUploadTask task = firebaseStorageRef.putFile(image);
     var downUrl = (await task.onComplete).ref.getDownloadURL();
     if (task.isComplete) {
+      setState(() {
+        _isLoading = false;
+      });
+    } else if (task.isPaused) {
       setState(() {
         _isLoading = false;
       });
@@ -244,6 +259,8 @@ class UpdatedFormState extends State<UpdatedForm> {
               ],
             ),
             DateTimePickerFormField(
+              initialValue: DateTime(int.parse(birthday.text.substring(0,4)),
+              int.parse(birthday.text.substring(4,6)), int.parse(birthday.text.substring(6,8))),
               inputType: InputType.date,
               format: DateFormat("yyyy-MM-dd"),
               initialDate: DateTime(2000, 1, 1),
@@ -260,7 +277,7 @@ class UpdatedFormState extends State<UpdatedForm> {
             Padding(
               padding: EdgeInsets.only(top: 20, bottom: 20),
               child: Center(
-                child: _image == null ? 
+                child: _image == null || _image == '' ? 
                 RaisedButton(
                   onPressed: () {
                     getImage(_uid);
@@ -269,20 +286,10 @@ class UpdatedFormState extends State<UpdatedForm> {
                 ):
                 Column(
                   children: <Widget>[
-                    Text('Tap image To Change an image', style: TextStyle(fontSize: 10)),
+                    Text('Tap image To Change an image', style: TextStyle(fontSize: 13)),
                     Padding(
                       padding: EdgeInsets.only(top: 20),
-                      child: GestureDetector(
-                        onTap: () {
-                          getImage(_uid);
-                        },
-                        child: CircleAvatar(
-                          radius: 100.0,
-                          backgroundImage:
-                              NetworkImage(_image),
-                          backgroundColor: Colors.transparent,
-                        )
-                      )
+                      child: setUpImage()
                     )
                   ],
                 )

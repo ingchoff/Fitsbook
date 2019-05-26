@@ -26,7 +26,6 @@ class _MainPageState extends State<MainPage> {
   List<Widget> _children = [
       NewFeed(),
       FriendRequest(),
-      MyHomePage(),
       Profile(),
       FeatureList()
     ];
@@ -53,10 +52,6 @@ class _MainPageState extends State<MainPage> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.notifications),
                 title: Text('Notifications'),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.map),
-                title: Text('map')
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),

@@ -355,7 +355,7 @@ class NewFeedState extends State<NewFeed> {
                                       // รูปคนโพสต์
                                       Column(
                                         children: <Widget>[
-                                          Text(_postList.length.toString()),
+                                          // Text(_postList.length.toString()),
                                           Row(                                          
                                             children: <Widget>[
                                               Text("        "),

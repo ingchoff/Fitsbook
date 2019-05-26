@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:fitsbook/Chat/homepage.dart';
 import 'package:fitsbook/PostScreen/ui/post_screen.dart';
+import 'package:fitsbook/Profile.dart';
 import './comment.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -204,7 +205,7 @@ class NewFeedState extends State<NewFeed> {
                                   String place = '';
                                   double userSize = 18;
                                   double placeSize = 10;
-                                  double frameSize = 480;
+                                  double frameSize = 475;
                                   if (snapshot.data[i]['place'] == null || snapshot.data[i]['place'] == '') {
                                     userSize = 18;
                                     placeSize = 0;
@@ -222,8 +223,11 @@ class NewFeedState extends State<NewFeed> {
                                   getUrlForPost(snapshot.data[i].documentID);  
                                   getUrlForPostUser(snapshot.data[i]['user']);
                                   return (
+                                    GestureDetector(
+                                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
+                                    child: 
                                     Container(
-                                      padding: EdgeInsets.only(top: 10.0), 
+                                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0), 
                                       margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
                                       width: 300,
                                       height: frameSize,
@@ -431,7 +435,7 @@ class NewFeedState extends State<NewFeed> {
                                           )
                                           : Text(''),
                                         ],
-                                      ))
+                                      )))
                                     );
                                 },
                                 itemCount: snapshot.data.length,

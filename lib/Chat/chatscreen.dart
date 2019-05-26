@@ -2,6 +2,10 @@ import './ChatRoom.dart';
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatelessWidget {
+  final List<String> users;
+
+  ChatScreen({this.users});
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -9,10 +13,7 @@ class ChatScreen extends StatelessWidget {
           title: new Text('Chat Room'),
         ),
         body: ChatRoom(
-          users: [
-            'MaqqJx6JxvNAQy5nPWe2CEiahOl1',
-            'qgp801RgwGZgVgHsGiabeo0axmM2'
-          ],
+          users: users,
         ));
   }
 }

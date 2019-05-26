@@ -91,13 +91,12 @@ class UpdatedFormState extends State<UpdatedForm> {
       QuerySnapshot users = await store.collection('users').getDocuments();
       for(var i=0;i<users.documents.length;i++) {
         txt = users.documents[i].data['dname'];
-        if(dname.text == txt && _userProfile['dname'] == dname.text) {
-          _notHaveDname = true;
-          break;
-        } else if (dname.text == txt && _userProfile['dname'] != dname.text) {
+        if(dname.text == txt && dname.text != _userProfile['dname']) {
           _notHaveDname = false;
-        }
-        else {
+          break;
+        } else if (dname.text != txt) {
+          _notHaveDname = true;
+        } else if (dname.text == txt && dname.text == _userProfile['dname']) {
           _notHaveDname = true;
         }
       }
@@ -123,7 +122,7 @@ class UpdatedFormState extends State<UpdatedForm> {
       } else {
         setState(() {
           _isLoading = false;
-          });
+        });
         scaffoldState.showSnackBar(new SnackBar(
           content: new Text('Display Name นี้ถูกใช้แล้ว'),
         ));
@@ -137,6 +136,11 @@ class UpdatedFormState extends State<UpdatedForm> {
         FirebaseStorage.instance.ref().child('profile/${_uid}/profile');
     final StorageUploadTask task = firebaseStorageRef.putFile(image);
     var downUrl = (await task.onComplete).ref.getDownloadURL();
+    if (task.isComplete) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
     downUrl.then((value) {
       setState(() {
         _image = value;
@@ -364,7 +368,7 @@ class UpdatedFormState extends State<UpdatedForm> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),
-                child: setUpButtonChild(),
+                child: Text('Update Profile', style: TextStyle(color: Colors.white)),
                 onPressed: changeProfile,
                   )
                 ),

@@ -1,4 +1,3 @@
-import 'package:fitsbook/Profile/EditProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -170,9 +169,8 @@ class _ProfileState extends State<Profile> {
             child: 
             Text('Edit Profile'
             ,style: TextStyle(color: Colors.white),),
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatedForm(_userProfile, _uid)));
-          },
+          // todo: nav ไปหน้า edit profile ตรงงน้
+          onPressed: () {},
           ),
         ),
         ButtonTheme(
@@ -190,7 +188,7 @@ class _ProfileState extends State<Profile> {
           },
           ),
         ),
-        ];
+      ];
     } else if (_isFriend) {
       allButton = [
         RaisedButton(
@@ -261,30 +259,9 @@ class _ProfileState extends State<Profile> {
     }
 
     List<Widget> _list;
-    if (_userProfile != null && _userProfile['profile'] != null) {
+    if (_userProfile != null) {
       _list = [
-        ProfilePics(diameter: 140, path: _userProfile['profile'],),
-        _buildFullName(),
-        Container(
-          margin: EdgeInsets.only(top: 10),
-          child: ListTile(
-            leading: Icon(Icons.cake),
-            title: Text(_userProfile['birthdate'].toString()),
-          ),
-        ),
-        ListTile(
-          leading: Icon(Icons.email),
-          title: Text(_userProfile['email']),
-        ),
-      ];
-      _list.addAll(allButton == null ? [] : allButton);
-      _list = _list.where((Widget w) => w != null).toList();
-    } else if (_userProfile != null && _userProfile['profile'] == '') {
-      _list = [
-        CircleAvatar(
-          radius: 100.0,
-          backgroundImage: AssetImage('resources/noimage.jpg')
-        ),
+        ProfilePics(diameter: 140, path: _userProfile['profile']),
         _buildFullName(),
         Container(
           margin: EdgeInsets.only(top: 10),
@@ -329,7 +306,9 @@ class _ProfileState extends State<Profile> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Profile'),
+          title: Center(
+            child: Image.asset('resources/logo.PNG', fit: BoxFit.cover, width: 25,)
+          )
         ),
         body: _profilePage);
   }

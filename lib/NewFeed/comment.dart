@@ -63,7 +63,7 @@ class CommentState extends State<Comment> {
   
   @override
   Widget build(BuildContext context) {
-    count++;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.title}"),
@@ -78,11 +78,16 @@ class CommentState extends State<Comment> {
             child: StreamBuilder<QuerySnapshot>(
               stream: _db.collection('posts').orderBy("dateCreated", descending: true).snapshots(),
               builder: (context, snapshot) {
-                if(snapshot.data == null) {
-                  return Center(child: CircularProgressIndicator());
+                var allData = snapshot.data;
+                if(allData == null) {  
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
-                if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                if (allData.documents.length == 0) {
+                  return Center(
+                    child: Text('No post in your feed !'),
+                  );
                 }
                 getUrlForPostUser(snapshot.data.documents[widget.no]['user']);
                 getUrlForPost(snapshot.data.documents[widget.no]['photo'][0]);
@@ -158,6 +163,17 @@ class CommentState extends State<Comment> {
                           StreamBuilder<QuerySnapshot>(
                           stream: _db.collection('users').snapshots(),
                           builder: (context, snapshot2) {
+                            var allData = snapshot2.data;
+                            if(allData == null) {  
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+                            if (allData.documents.length == 0) {
+                              return Center(
+                                child: Text('No post in your feed !'),
+                              );
+                            }
                             String userpost = "";
                             for (var item in snapshot2.data.documents) {
                               if (item.documentID == snapshot.data.documents[widget.no]['user']) {
@@ -418,6 +434,17 @@ class CommentState extends State<Comment> {
                                                               StreamBuilder<QuerySnapshot>(
                                                                 stream: _db.collection('users').snapshots(),
                                                                 builder: (context, snapshot3) {
+                                                                  var allData = snapshot3.data;
+                                                                  if(allData == null) {  
+                                                                    return Center(
+                                                                      child: CircularProgressIndicator(),
+                                                                    );
+                                                                  }
+                                                                  if (allData.documents.length == 0) {
+                                                                    return Center(
+                                                                      child: Text('No post in your feed !'),
+                                                                    );
+                                                                  }
                                                                   if(snapshot3.hasData) {
                                                                     if(snapshot3.data.documents.length != 0) {
                                                                   String userpost = "";

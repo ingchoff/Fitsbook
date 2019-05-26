@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitsbook/FeatureList.dart';
 import 'package:fitsbook/FriendRequest.dart';
 import 'package:fitsbook/FriendRequest/RequestList.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _MainPageState extends State<MainPage> {
       FriendRequest(),
       Holder('Map'),
       Profile(),
-      Holder('Settings')
+      FeatureList()
     ];
 
   void _navHandler(int index) {
@@ -61,8 +62,8 @@ class _MainPageState extends State<MainPage> {
                 title: Text('Profile')
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings),
-                title: Text('Setting')
+                icon: Icon(Icons.featured_play_list),
+                title: Text('Feature List')
               ),
             ],
             onTap: _navHandler,

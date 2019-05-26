@@ -390,7 +390,10 @@ class NewFeedState extends State<NewFeed> {
                                           ),
                                           // รูปโพสต์
                                           urlPicPost == null || urlPicPost == ''
-                                          ? new Image.asset('resources/logo.PNG', width: 125)
+                                          ? new SizedBox(
+                                            width: 20,
+                                            height: 20,
+                                          )
                                           : new Image.network(
                                             urlPicPost,
                                             width: 125,
@@ -482,7 +485,7 @@ class NewFeedState extends State<NewFeed> {
                                                   _controllerList[i].clear();
                                                   setState(() {
                                                     context = context;
-                                                  });;
+                                                  });
                                                   Scaffold.of(context).showSnackBar(new SnackBar(
                                                     content: new Text('คอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
                                                   ));

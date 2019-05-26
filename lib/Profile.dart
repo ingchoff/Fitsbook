@@ -261,9 +261,30 @@ class _ProfileState extends State<Profile> {
     }
 
     List<Widget> _list;
-    if (_userProfile != null) {
+    if (_userProfile != null && _userProfile['profile'] != null) {
       _list = [
-        ProfilePics(diameter: 140, path: _userProfile['profile']),
+        ProfilePics(diameter: 140, path: _userProfile['profile'],),
+        _buildFullName(),
+        Container(
+          margin: EdgeInsets.only(top: 10),
+          child: ListTile(
+            leading: Icon(Icons.cake),
+            title: Text(_userProfile['birthdate'].toString()),
+          ),
+        ),
+        ListTile(
+          leading: Icon(Icons.email),
+          title: Text(_userProfile['email']),
+        ),
+      ];
+      _list.addAll(allButton == null ? [] : allButton);
+      _list = _list.where((Widget w) => w != null).toList();
+    } else if (_userProfile != null && _userProfile['profile'] == '') {
+      _list = [
+        CircleAvatar(
+          radius: 100.0,
+          backgroundImage: AssetImage('resources/noimage.jpg')
+        ),
         _buildFullName(),
         Container(
           margin: EdgeInsets.only(top: 10),

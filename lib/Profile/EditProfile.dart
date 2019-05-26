@@ -107,13 +107,15 @@ class UpdatedFormState extends State<UpdatedForm> {
           'fname':fname.text,
           'lname':lname.text,
           'birthdate': int.parse(birthday.text),
-          'gender': gender.text
+          'gender': gender.text,
+          'profile': _image
         },merge: true);
         _userProfile['dname'] = dname.text;
         _userProfile['fname'] = fname.text;
         _userProfile['lname'] = lname.text;
         _userProfile['birthdate'] = birthday.text;
         _userProfile['gender'] = gender.text;
+        _userProfile['profile'] = _image;
         setState(() {
           _isLoading = false; 
         });
@@ -129,9 +131,18 @@ class UpdatedFormState extends State<UpdatedForm> {
     }
   }
 
-  Future getImage() async {
+  Future getImage(_uid) async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
-    print(image);
+    final StorageReference firebaseStorageRef =
+        FirebaseStorage.instance.ref().child('profile/${_uid}/profile');
+    final StorageUploadTask task = firebaseStorageRef.putFile(image);
+    String tmpUrl = firebaseStorageRef.getDownloadURL().toString();
+    var downUrl = await (await task.onComplete).ref.getDownloadURL();
+    var url = downUrl.toString();
+    print(url);
+    setState(() {
+      _image = url;
+    });
 
     // setState(() {
     //   _image = image;
@@ -318,14 +329,21 @@ class UpdatedFormState extends State<UpdatedForm> {
               padding: EdgeInsets.only(top: 20, bottom: 20),
               child: Center(
                 child: _image == null ? 
-                Text('Tap Here To Select an image', style: TextStyle(fontSize: 10)):
+                RaisedButton(
+                  onPressed: () {
+                    getImage(_uid);
+                  },
+                  child: Text('Add Profile Image'),
+                ):
                 Column(
                   children: <Widget>[
                     Text('Tap image To Change an image', style: TextStyle(fontSize: 10)),
                     Padding(
                       padding: EdgeInsets.only(top: 20),
                       child: GestureDetector(
-                        onTap: getImage,
+                        onTap: () {
+                          getImage(_uid);
+                        },
                         child: CircleAvatar(
                           radius: 100.0,
                           backgroundImage:

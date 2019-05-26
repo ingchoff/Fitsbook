@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fitsbook/FriendRequest.dart';
+import 'package:fitsbook/FriendRequest/RequestList.dart';
 import 'package:flutter/material.dart';
 import './Holder.dart';
-import './NewFeed.dart';
+import './NewFeed/new_feed.dart';
 import './Profile.dart';
 
 class MainPage extends StatefulWidget {
@@ -21,7 +23,7 @@ class _MainPageState extends State<MainPage> {
   int index = 0;
   List<Widget> _children = [
       NewFeed(),
-      Holder('Notify'),
+      FriendRequest(),
       Holder('Map'),
       Profile(),
       Holder('Settings')
@@ -44,7 +46,8 @@ class _MainPageState extends State<MainPage> {
             currentIndex: index,
             items: [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.home), title: Text('Home')),
+                  icon: Icon(Icons.home), 
+                  title: Text('Home')),
               BottomNavigationBarItem(
                 icon: Icon(Icons.notifications),
                 title: Text('Notifications'),

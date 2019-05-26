@@ -54,7 +54,7 @@ class LoginState extends State<Login> {
     if (_isLoading) {
       return CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),);
     }else {
-      return new Text('LOGIN');
+      return new Text('LOGIN', style: TextStyle(color: Colors.white),);
     }
   }
 
@@ -182,8 +182,8 @@ class LoginState extends State<Login> {
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.only(top: 50),
-              child: Image.asset('resources/logo.jpg',height: 250,),
+              padding: EdgeInsets.only(top: 100),
+              child: Image.asset('resources/logo.PNG',height: 100,),
             ),  
             Padding(
               padding: EdgeInsets.only(top: 30),
@@ -230,7 +230,7 @@ class LoginState extends State<Login> {
                   ),
                   onPressed: signIn,
                   child: setUpButtonChild(),
-                  color: Colors.lightBlueAccent,
+                  color: Colors.green,
                 ),
               )
             ),
@@ -238,7 +238,7 @@ class LoginState extends State<Login> {
               onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context) => Register()));
               },
-              child: Text('Register New Account',style: TextStyle(color: Colors.teal, fontSize: 16),textAlign: TextAlign.right,),
+              child: Text('Register New Account',style: TextStyle(color: Colors.green, fontSize: 16),textAlign: TextAlign.right,),
             ),
           ]
         )

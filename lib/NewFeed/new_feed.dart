@@ -10,7 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
-final DateTime _now = DateTime.now();
+DateTime _now;
 
 class NewFeed extends StatefulWidget {
   @override
@@ -24,7 +24,9 @@ class NewFeed extends StatefulWidget {
 String txt;
 String userPic;
 String userId;
-
+bool _isFinish;
+List<String> _postList;
+List<String> _userList;
 class NewFeedState extends State<NewFeed> {
   ScrollController _scrollController;
   final Firestore _db = Firestore.instance;
@@ -33,7 +35,9 @@ class NewFeedState extends State<NewFeed> {
   @override
   void initState(){
     super.initState();
+    _now = DateTime.now();
     
+    _isFinish = false;
     // สำหรับเรียกภาพผู้ใช้ตอนโพสต์
     _scrollController = ScrollController();
     readFile('profile').then((String value){
@@ -42,6 +46,17 @@ class NewFeedState extends State<NewFeed> {
 
     readFile('userId').then((String value){
       userId = value;
+    });
+    setState(() {
+      _isFinish = true;
+    });
+
+    getPostPicAll().then((List<String> value) {
+      _postList = value;
+    });
+
+    getUserPostPicAll().then((List<String> value) {
+      _userList = value;
     });
   }
 
@@ -140,12 +155,38 @@ class NewFeedState extends State<NewFeed> {
     return data.documents;
   }
 
-  
-  
+  // ดึงรูปทั้งหมด
+  Future<List<String>> getPostPicAll() async {
+    List _urlPostLists = [];
+    var docs =
+        await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
+    // print(docs.data['friends']);
+    for (var i=0; i<docs.documents.length; i++) {
+      String _link = await getUrlForPost(docs.documents[i].documentID);
+      _urlPostLists.add(_link);
+    }
+    return _urlPostLists;
+  }
 
+  Future<List<String>> getUserPostPicAll() async {
+    List _urlUserLists = [];
+    var docs =
+        await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
+    // print(docs.data['friends']);
+    for (var i=0; i<docs.documents.length; i++) {
+      String _link = await getUrlForPost(docs.documents[i]['user']);
+      _urlUserLists.add(_link);
+    }
+    return _urlUserLists;
+  }
+
+  
+  
+  
   @override
   Widget build(BuildContext context) {
     debugPrint(userId);
+    
     // printUrl();
     return Scaffold(
       appBar: AppBar(
@@ -159,7 +200,8 @@ class NewFeedState extends State<NewFeed> {
         )
         
       ),
-      body: ListView(
+      body: 
+      ListView(
         controller: _scrollController,
         children: [ Container(
           
@@ -215,25 +257,32 @@ class NewFeedState extends State<NewFeed> {
                 ],
               ),
               // วนลูปโพสต์ เพื่อแสดงโพสต์
+              
               Container(
                 
                 margin: EdgeInsets.only(top: 20.0),
                 child: 
                 Center(
-                  child: 
-                    
+                  child:
                     FutureBuilder<dynamic>(
                       future: getAllPost(),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        
-                        if (_now.microsecondsSinceEpoch.compareTo(DateTime.now().millisecondsSinceEpoch) == 6) {
+                        var allData = snapshot.data;
+                        if(allData == null) {  
                           return Center(
                             child: CircularProgressIndicator(),
                           );
                         }
+                        if (allData.length == 0) {
+                          return Center(
+                            child: Text('No post in your feed !'),
+                          );
+                        }
+                        
+                        
+                        // if(snapshot.hasData) {
+                        //   if(snapshot.data.length != 0) {
                             
-                        if(snapshot.hasData) {
-                          if(snapshot.data.length != 0) {
                             
                             // return SizedBox(
                             //   width: 600,
@@ -299,23 +348,24 @@ class NewFeedState extends State<NewFeed> {
                                           Text("        "),
                                           Row(                                          
                                             children: <Widget>[
-                                              Text("        "),
-                                              Container(
-                                                width: 40,
-                                                child: GestureDetector(
-                                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
-                                                  child: 
-                                                    urlUserPost == null || urlUserPost == '' 
-                                                    ? new ProfilePics(
-                                                      path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
-                                                      diameter: 40,
-                                                    )
-                                                    : new ProfilePics(
-                                                      path: urlUserPost,
-                                                      diameter: 40,
-                                                    )
-                                                )
-                                              ),
+                                              // Text("        "),
+                                              // Text(_userList[0].toString()),
+                                              // Container(
+                                              //   width: 40,
+                                              //   child: GestureDetector(
+                                              //     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
+                                              //     child: 
+                                              //       _userList[i] == null ||  _userList[i] == '' 
+                                              //       ? new ProfilePics(
+                                              //         path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                                              //         diameter: 40,
+                                              //       )
+                                              //       : new ProfilePics(
+                                              //         path:  _userList[i],
+                                              //         diameter: 40,
+                                              //       )
+                                              //   )
+                                              // ),
                                               Text("   "),
 
                                               // ชื่อของคนโพสต์
@@ -327,26 +377,33 @@ class NewFeedState extends State<NewFeed> {
                                                       StreamBuilder<QuerySnapshot>(
                                                         stream: _db.collection('users').snapshots(),
                                                         builder: (context, snapshot2) {
-                                                          String userpost = "";
-                                                          for (var item in snapshot2.data.documents) {
-                                                            if(item.documentID == snapshot.data[i]['user']) {
-                                                              userpost = item['fname'] + ' ' + item['lname'];
+                                                          if(snapshot2.hasData) {
+                                                            if(snapshot2.data.documents.length != 0) {
+                                                              String userpost = "";
+                                                              for (var item in snapshot2.data.documents) {
+                                                                if(item.documentID == snapshot.data[i]['user']) {
+                                                                  userpost = item['fname'] + ' ' + item['lname'];
+                                                                }
+                                                              }
+                                                              if (userpost == "") userpost = "ไม่ประสงค์จะออกนาม";
+                                                              return Column(
+                                                                children: <Widget>[
+                                                                  Text(
+                                                                    userpost,
+                                                                    style: new TextStyle(
+                                                                      fontSize: userSize,
+                                                                      color: Colors.black,
+                                                                      fontWeight: FontWeight.bold              
+                                                                    ),  
+                                                                  ),
+                                                                ],
+                                                              );
                                                             }
+                                                            else return Text('');
                                                           }
-                                                          if (userpost == "") userpost = "ไม่ประสงค์จะออกนาม";
-                                                          return Column(
-                                                            children: <Widget>[
-                                                              Text(
-                                                                userpost,
-                                                                style: new TextStyle(
-                                                                  fontSize: userSize,
-                                                                  color: Colors.black,
-                                                                  fontWeight: FontWeight.bold              
-                                                                ),  
-                                                              ),
-                                                            ],
-                                                          );
-                                                        },),
+                                                          else return Text('');
+                                                        }
+                                                        ),
                                                         Text('  '),
                                                         
                                                       ]
@@ -516,35 +573,46 @@ class NewFeedState extends State<NewFeed> {
                                         ],
                                       )))
                                     ); 
-                              
+                                    
+                                    
                               
                             }
                               
+                            
 
-                              return
-                                new Column(
-                                children: children,
-                              );
+                            
+                            
+                            _isFinish = true;
+                            
+
+                            return new Column(
+                              children: children,
+                            );
+                            
+                                
                           }
-                          else {
-                            return Center(child: CircularProgressIndicator());
-                          }
-                        }
-                        else {
-                          return Center(child: CircularProgressIndicator());
-                        }
-                      }
+                      //     else {
+                      //       return Center(child: CircularProgressIndicator());
+                      //     }
+                      //   }
+                      //   else {
+                      //     return Center(child: CircularProgressIndicator());
+                      //   }
+                      // }
+
                       
                     ),
                   // ListView.builder(
                     
                   // ),
+                  
                 ),
               )
             ], 
             ),
           ), ]
       ),
+      
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
@@ -553,4 +621,5 @@ class NewFeedState extends State<NewFeed> {
       ),
     );
   }
+  
 }

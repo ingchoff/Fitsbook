@@ -5,22 +5,24 @@ import 'package:fitsbook/Profile/ProfilePic.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+int count;
 class Comment extends StatefulWidget {
   final String title;
   final int no;
   final String userPic;
   final String userId;
   Comment({this.title, this.no, this.userPic, this.userId});
-
   @override
   State<StatefulWidget> createState() {
     // TODO: implement createState
     return CommentState();
   }
 }
-
+DateTime _now = DateTime.now();
 class CommentState extends State<Comment> {
   final Firestore _db = Firestore.instance;
+  
+  bool _isFinish;
   TextEditingController _comment = TextEditingController();
   String urlPicPost;
   final TextEditingController comment_Word = TextEditingController();
@@ -33,6 +35,12 @@ class CommentState extends State<Comment> {
     setState(() {
       urlPicPost = url;
     });
+
+    void initState() {
+      super.initState();
+      _isFinish = false;
+      count = 0;
+    }
   }
 
   String urlUserPost;
@@ -55,11 +63,13 @@ class CommentState extends State<Comment> {
   
   @override
   Widget build(BuildContext context) {
+    count++;
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.title}"),
       ),
-      body: ListView(
+      body: 
+      ListView(
         children: <Widget>[
           Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -306,8 +316,19 @@ class CommentState extends State<Comment> {
                             FutureBuilder<dynamic>(
                               future: getAllComment(snapshot.data.documents[widget.no].documentID),
                               builder: (BuildContext context, AsyncSnapshot snapshot2) {
-                                if(snapshot2.hasData) {
-                                  if(snapshot2.data.length != 0) {
+                                var allData = snapshot2.data;
+                                if(allData == null) {  
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+                                if (allData.length == 0) {
+                                  return Center(
+                                    child: Text('No Comment !'),
+                                  );
+                                }
+                                
+                                
                                     // return SizedBox(
                                     //   width: 600,
                                     //   height: 400,
@@ -397,6 +418,8 @@ class CommentState extends State<Comment> {
                                                               StreamBuilder<QuerySnapshot>(
                                                                 stream: _db.collection('users').snapshots(),
                                                                 builder: (context, snapshot3) {
+                                                                  if(snapshot3.hasData) {
+                                                                    if(snapshot3.data.documents.length != 0) {
                                                                   String userpost = "";
                                                                   for (var item in snapshot3.data.documents) {
                                                                     if(item.documentID == snapshot2.data[i]['user']) {
@@ -416,8 +439,11 @@ class CommentState extends State<Comment> {
                                                                       ),
                                                                     ],
                                                                   );
-                                                                },),
-                                                                Text('  '),
+                                                                }else return Text('');} else return Text('');
+                                                                }
+                                                                ),
+                                                                Text('  ')
+                                                                
                                                                 
                                                               ]
                                                             ),
@@ -486,19 +512,11 @@ class CommentState extends State<Comment> {
                                       
                                     }
                                     return 
-                                        new Column(
+                                      
+                                      new Column(
                                         children: children,
                                       );
-                                  }
-                                  else {
-                                    return Center(child: CircularProgressIndicator());
-                                  }
-                                }
-                                else {
-                                  return Center(child: CircularProgressIndicator());
-                                }
-                              }
-                              
+                              }   
                             ),
                           // ListView.builder(
                             

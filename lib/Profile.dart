@@ -295,10 +295,10 @@ class _ProfileState extends State<Profile> {
       _list.addAll(_posts.keys.map((k) {
         return GestureDetector(
           // link ไปยังโพสต์โดยการแก้ on tap function
-          onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Profile(_uid)),
-              ),
+          // onTap: () => Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => Profile(_uid)),
+          //     ),
           child: ProfilePosts(
             profile: ProfilePics(diameter: 50, path: _userProfile['profile']),
             dname: _userProfile['dname'],

@@ -25,16 +25,17 @@ String txt;
 String userPic;
 String userId;
 bool _isFinish;
-List<String> _postList;
-List<String> _userList;
+List<String> _postList = [];
+List<String> _userList = [];
 class NewFeedState extends State<NewFeed> {
   ScrollController _scrollController;
   final Firestore _db = Firestore.instance;
   bool _isOnTop = true;
   
   @override
-  void initState(){
+  void initState() {
     super.initState();
+    
     _now = DateTime.now();
     
     _isFinish = false;
@@ -50,14 +51,9 @@ class NewFeedState extends State<NewFeed> {
     setState(() {
       _isFinish = true;
     });
-
-    getPostPicAll().then((List<String> value) {
-      _postList = value;
-    });
-
-    getUserPostPicAll().then((List<String> value) {
-      _userList = value;
-    });
+    // _postList = await getPostPicAll();
+    // _userList = await getUserPostPicAll();
+    
   }
 
   @override
@@ -134,6 +130,7 @@ class NewFeedState extends State<NewFeed> {
     setState(() {
       urlPicPost = url;
     }); 
+    return url;
   }
 
   // ดึงรูปคนโพสต์ (ฟังก์ชันทำงานผิดปรกติ)
@@ -156,28 +153,18 @@ class NewFeedState extends State<NewFeed> {
   }
 
   // ดึงรูปทั้งหมด
-  Future<List<String>> getPostPicAll() async {
-    List _urlPostLists = [];
-    var docs =
-        await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
-    // print(docs.data['friends']);
-    for (var i=0; i<docs.documents.length; i++) {
-      String _link = await getUrlForPost(docs.documents[i].documentID);
-      _urlPostLists.add(_link);
+  Future getPostPicAll() async {
+    List<String> _list = [];
+    QuerySnapshot data = await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
+    var _data = data.documents;
+    for (var i=0; i<_data.length; i++) {
+      String postID = _data[i].documentID;
+      getUrlForPost(postID); 
+      
+        _list.add(urlPicPost);
+            
     }
-    return _urlPostLists;
-  }
-
-  Future<List<String>> getUserPostPicAll() async {
-    List _urlUserLists = [];
-    var docs =
-        await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
-    // print(docs.data['friends']);
-    for (var i=0; i<docs.documents.length; i++) {
-      String _link = await getUrlForPost(docs.documents[i]['user']);
-      _urlUserLists.add(_link);
-    }
-    return _urlUserLists;
+    return _list;
   }
 
   
@@ -188,6 +175,8 @@ class NewFeedState extends State<NewFeed> {
     debugPrint(userId);
     
     // printUrl();
+    // 
+    // debugPrint(_userList[0]);
     return Scaffold(
       appBar: AppBar(
         title: GestureDetector(
@@ -348,6 +337,7 @@ class NewFeedState extends State<NewFeed> {
                                           Text("        "),
                                           Row(                                          
                                             children: <Widget>[
+                                              
                                               // Text("        "),
                                               // Text(_userList[0].toString()),
                                               // Container(
@@ -456,6 +446,7 @@ class NewFeedState extends State<NewFeed> {
                                             width: 125,
                                             height: 200,
                                           ),
+                                          
                                           // กดดูคอมเมนต์
                                           Row(          
                                             mainAxisAlignment: MainAxisAlignment.end,                                

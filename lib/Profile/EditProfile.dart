@@ -1,16 +1,12 @@
-import 'package:fitsbook/Profile/ProfilePic.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
 final Firestore store = Firestore.instance;
 
 class UpdatedForm extends StatefulWidget {
@@ -109,7 +105,7 @@ class UpdatedFormState extends State<UpdatedForm> {
           'dname': dname.text,
           'fname':fname.text,
           'lname':lname.text,
-          'birthdate': int.parse(birthday.text),
+          'birthdate': int.parse(formatter1.format(birthdate)),
           'gender': gender.text,
           'profile': _image
         },merge: true);
@@ -253,7 +249,7 @@ class UpdatedFormState extends State<UpdatedForm> {
               initialDate: DateTime(2000, 1, 1),
               editable: false,
               decoration: InputDecoration(
-                labelText: 'Birth Date',
+                labelText: birthday.text,
                 hasFloatingPlaceholder: false
               ),
               onChanged: (dt) {

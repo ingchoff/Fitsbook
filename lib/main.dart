@@ -1,4 +1,3 @@
-import 'package:fitsbook/MainPage.dart';
 import 'package:flutter/material.dart';
 import './login.dart';
 
@@ -14,7 +13,6 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (BuildContext context) => Login(),
-        '/main' : (BuildContext context) => MainPage()
       },
       theme: ThemeData(
         primarySwatch: Colors.green,

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitsbook/MainPage.dart';
 import 'package:fitsbook/NewFeed/new_feed.dart';
 import 'package:fitsbook/PostScreen/ui/places_screen.dart';
 import '../services/place_service.dart';
@@ -11,7 +10,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
-import 'package:fitsbook/main.dart';
 
 
 class PostForm extends StatefulWidget {

@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitsbook/FriendRequest/Friendlist.dart';
-import 'package:fitsbook/FriendRequest/Request.dart';
+import 'package:fitsbook/FriendRequest.dart';
 import 'package:fitsbook/FriendRequest/RequestList.dart';
 import 'package:flutter/material.dart';
 import './Holder.dart';
@@ -24,7 +23,7 @@ class _MainPageState extends State<MainPage> {
   int index = 0;
   List<Widget> _children = [
       NewFeed(),
-      RequestList(),
+      FriendRequest(),
       Holder('Map'),
       Profile(),
       Holder('Settings')

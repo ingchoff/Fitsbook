@@ -65,7 +65,6 @@ class ChatRoomState extends State<ChatRoom> {
       // _messages = msgBuffer;
       isFinish = true;
     });
-    
   }
 
   void _listenerOpen() {
@@ -77,7 +76,8 @@ class ChatRoomState extends State<ChatRoom> {
         .snapshots()
         .listen((data) => data.documents.forEach((doc) {
               List<ChatMessage> duplicate = _messages
-                  .where((ChatMessage chat) => chat.msgId == doc.documentID).toList();
+                  .where((ChatMessage chat) => chat.msgId == doc.documentID)
+                  .toList();
 
               if (duplicate.length == 0) {
                 setState(() {
@@ -99,16 +99,18 @@ class ChatRoomState extends State<ChatRoom> {
   void _handleSubmitted(String text) {
     _textController.clear();
 
-    Firestore.instance
-        .collection('chats')
-        .document(chatroomName)
-        .collection('messages')
-        .document()
-        .setData({
-      'message': text,
-      'dateCreated': DateTime.now().millisecondsSinceEpoch,
-      'user': _uid
-    });
+    if (text == '') {
+      Firestore.instance
+          .collection('chats')
+          .document(chatroomName)
+          .collection('messages')
+          .document()
+          .setData({
+        'message': text,
+        'dateCreated': DateTime.now().millisecondsSinceEpoch,
+        'user': _uid
+      });
+    }
   }
 
   Widget _textComposerWidget() {

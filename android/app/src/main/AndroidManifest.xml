@@ -10,6 +10,8 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="fitsbook"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDRFtRyNvn2LfONpJiMxrPr9FcBaIybwdk"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

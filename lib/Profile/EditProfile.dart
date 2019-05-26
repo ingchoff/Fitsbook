@@ -134,10 +134,12 @@ class UpdatedFormState extends State<UpdatedForm> {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
     if (image.length == 0) {
       setState(() {
-        _isLoading = true;
+        _isLoading = false;
       });
     } else {
-      
+      setState(() {
+        _isLoading = true;
+      });
     }
     final StorageReference firebaseStorageRef =
         FirebaseStorage.instance.ref().child('profile/${_uid}/profile');

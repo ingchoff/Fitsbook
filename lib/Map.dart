@@ -42,13 +42,20 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('Google Maps'),
       ),
-      body: GoogleMap(
+      body: Stack(
+        children: [Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: GoogleMap(
             initialCameraPosition:
                 CameraPosition(target: LatLng(40.7128, -74.0060), zoom: 12.0),
             markers: Set.from(allMarkers),
             onMapCreated: mapCreated,
           ),
-      );
+        ),
+        ]
+      ),
+    );
   }
 
   void mapCreated(controller) {

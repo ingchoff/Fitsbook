@@ -215,6 +215,8 @@ class PostFormState extends State {
                       'detail': post, //ข้อความที่โพสต์
                       'user': userId, //User สมมุติของ Q 
                       'place': tagged, //ชื่อสถานที่
+                      'latitude':currentLocation['latitude'], // ละติจูด
+                      'longitude':currentLocation['longitude'], // ลองจิจูด
                       'photo': 'posts' + '/' + docId.documentID + '/post'}
                   );
 

@@ -30,8 +30,6 @@ class ChatRoomState extends State<ChatRoom> {
   }
 
   Future initChat() async {
-    List<ChatMessage> msgBuffer = [];
-
     String uid = await FileProvider.readFile('userId');
     _uid = uid;
     DocumentSnapshot doc =
@@ -62,10 +60,35 @@ class ChatRoomState extends State<ChatRoom> {
     _listenerOpen();
 
     setState(() {
-      // _messages = msgBuffer;
       isFinish = true;
     });
-    
+  }
+
+  void _messagesToList(QuerySnapshot data) {
+    for (dynamic doc in data.documents) {
+      List<ChatMessage> duplicate = _messages
+          .where((ChatMessage chat) => chat.msgId == doc.documentID)
+          .toList();
+
+      if (duplicate.length == 0) {
+        try {
+          setState(() {
+            _messages.insert(
+                0,
+                ChatMessage(
+                  text: doc.data['message'],
+                  msgId: doc.documentID,
+                  userId: doc.data['user'],
+                  isOwner: _uid == doc.data['user'] ? true : false,
+                  path: _profileMap[doc.data['user']],
+                  name: _nameMap[doc.data['user']],
+                ));
+          });
+        } catch (e) {
+          print('there is some error about dispose()');
+        }
+      }
+    }
   }
 
   void _listenerOpen() {
@@ -75,40 +98,24 @@ class ChatRoomState extends State<ChatRoom> {
         .collection('messages')
         .orderBy('dateCreated')
         .snapshots()
-        .listen((data) => data.documents.forEach((doc) {
-              List<ChatMessage> duplicate = _messages
-                  .where((ChatMessage chat) => chat.msgId == doc.documentID).toList();
-
-              if (duplicate.length == 0) {
-                setState(() {
-                  _messages.insert(
-                      0,
-                      ChatMessage(
-                        text: doc.data['message'],
-                        msgId: doc.documentID,
-                        userId: doc.data['user'],
-                        isOwner: _uid == doc.data['user'] ? true : false,
-                        path: _profileMap[doc.data['user']],
-                        name: _nameMap[doc.data['user']],
-                      ));
-                });
-              }
-            }));
+        .listen((data) => _messagesToList(data));
   }
 
   void _handleSubmitted(String text) {
     _textController.clear();
 
-    Firestore.instance
-        .collection('chats')
-        .document(chatroomName)
-        .collection('messages')
-        .document()
-        .setData({
-      'message': text,
-      'dateCreated': DateTime.now().millisecondsSinceEpoch,
-      'user': _uid
-    });
+    if (text != '') {
+      Firestore.instance
+          .collection('chats')
+          .document(chatroomName)
+          .collection('messages')
+          .document()
+          .setData({
+        'message': text,
+        'dateCreated': DateTime.now().millisecondsSinceEpoch,
+        'user': _uid
+      });
+    }
   }
 
   Widget _textComposerWidget() {

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:fitsbook/Chat/ChatScreen.dart';
 import 'package:fitsbook/PostScreen/ui/post_screen.dart';
 import 'package:fitsbook/Profile.dart';
 import 'package:fitsbook/Profile/ProfilePic.dart';
@@ -10,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
-DateTime _now;
+final DateTime _now = DateTime.now();
 
 class NewFeed extends StatefulWidget {
   @override
@@ -24,21 +23,17 @@ class NewFeed extends StatefulWidget {
 String txt;
 String userPic;
 String userId;
-bool _isFinish;
-List<String> _postList = [];
-List<String> _userList = [];
+
 class NewFeedState extends State<NewFeed> {
   ScrollController _scrollController;
   final Firestore _db = Firestore.instance;
   bool _isOnTop = true;
-  
+  Future<List> _post;
+  List  _list;
   @override
-  void initState() {
+  void initState(){
     super.initState();
     
-    _now = DateTime.now();
-    
-    _isFinish = false;
     // สำหรับเรียกภาพผู้ใช้ตอนโพสต์
     _scrollController = ScrollController();
     readFile('profile').then((String value){
@@ -48,12 +43,28 @@ class NewFeedState extends State<NewFeed> {
     readFile('userId').then((String value){
       userId = value;
     });
-    setState(() {
-      _isFinish = true;
-    });
-    // _postList = await getPostPicAll();
-    // _userList = await getUserPostPicAll();
-    
+  //   _list = [];
+  //   Future<List> download() async {
+  //     var example = await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
+  //     return example.documents;
+  //   }
+  //   FutureBuilder(
+  //     future: download(),
+  //     builder: (context, snapshot) {
+  //       print(snapshot.data.length.toString());
+  //     },
+  //   );
+  //   _userList = [];
+  //   _postList = [];
+  //   // print('All : ' + _list.length.toString());
+  //   for(int i; i < _list.length; i++) {
+  //     String _docId = _list[i].documentID;
+  //     String _userId = _list[i]['user'];
+  //     getUrlForPost(_docId);
+  //     _userList.add(urlUserPost);
+  //     getUrlForPostUser(_userId);
+  //     _postList.add(urlPicPost);
+  //   }
   }
 
   @override
@@ -70,7 +81,9 @@ class NewFeedState extends State<NewFeed> {
 
   TextEditingController _comment = TextEditingController();
   List<TextEditingController> _controllerList = <TextEditingController>[];
-  
+  List _postList = [];
+  List _userList = [];
+
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
@@ -122,28 +135,55 @@ class NewFeedState extends State<NewFeed> {
 
   // ดึงรูปโพสต์ (ฟังก์ชันทำงานผิดปรกติ)
   String urlPicPost;
+  
   getUrlForPost(String documentID) async {
     StorageReference ref = 
-        FirebaseStorage.instance.ref().child('posts/${documentID}/post');
+        FirebaseStorage.instance.ref().child('posts/$documentID/post');
     String url = (await ref.getDownloadURL()).toString();
     // print(url);
     setState(() {
+      _postList.add(url);
       urlPicPost = url;
     }); 
-    return url;
+  }
+
+  
+  getUrlForPostAll(AsyncSnapshot snapshot) async {
+    var _snapshot = snapshot.data;
+    for(var i; i<_snapshot.length; i++) {
+      var documentID = snapshot.data[i].documentID;
+      StorageReference ref = 
+        FirebaseStorage.instance.ref().child('posts/$documentID/post');
+      String url = (await ref.getDownloadURL()).toString();
+      _postList.add(url);
+    }
   }
 
   // ดึงรูปคนโพสต์ (ฟังก์ชันทำงานผิดปรกติ)
   String urlUserPost;
-  getUrlForPostUser(String userId) async {
+
+  getUrlForPostUser(String userId) async {  
     StorageReference ref = 
         FirebaseStorage.instance.ref().child("profile/$userId/profile");
     String url = (await ref.getDownloadURL()).toString();
     // print(url);
     setState(() {
+      _userList.add(url);
       urlUserPost = url;
     });
     return url;
+  }
+
+  
+  getUrlForUserPostAll(AsyncSnapshot snapshot) async {
+    var _snapshot = snapshot.data;
+    for(var i; i<_snapshot.length; i++) {
+      var userID = snapshot.data[i]['user'];
+      StorageReference ref = 
+        FirebaseStorage.instance.ref().child('profile/$userID/profile');
+      String url = (await ref.getDownloadURL()).toString();
+      _postList.add(url);
+    }
   }
 
   // ดึงโพสต์
@@ -152,31 +192,13 @@ class NewFeedState extends State<NewFeed> {
     return data.documents;
   }
 
-  // ดึงรูปทั้งหมด
-  Future getPostPicAll() async {
-    List<String> _list = [];
-    QuerySnapshot data = await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
-    var _data = data.documents;
-    for (var i=0; i<_data.length; i++) {
-      String postID = _data[i].documentID;
-      getUrlForPost(postID); 
-      
-        _list.add(urlPicPost);
-            
-    }
-    return _list;
-  }
+  
+  
 
-  
-  
-  
   @override
   Widget build(BuildContext context) {
     debugPrint(userId);
-    
     // printUrl();
-    // 
-    // debugPrint(_userList[0]);
     return Scaffold(
       appBar: AppBar(
         title: GestureDetector(
@@ -189,8 +211,7 @@ class NewFeedState extends State<NewFeed> {
         )
         
       ),
-      body: 
-      ListView(
+      body: ListView(
         controller: _scrollController,
         children: [ Container(
           
@@ -246,33 +267,29 @@ class NewFeedState extends State<NewFeed> {
                 ],
               ),
               // วนลูปโพสต์ เพื่อแสดงโพสต์
-              
               Container(
                 
                 margin: EdgeInsets.only(top: 20.0),
                 child: 
                 Center(
-                  child:
+                  child: 
+                    
                     FutureBuilder<dynamic>(
                       future: getAllPost(),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        var allData = snapshot.data;
+                        
+                       var allData = snapshot.data;
                         if(allData == null) {  
                           return Center(
                             child: CircularProgressIndicator(),
                           );
-                        }
+              }
                         if (allData.length == 0) {
                           return Center(
                             child: Text('No post in your feed !'),
                           );
                         }
                         
-                        
-                        // if(snapshot.hasData) {
-                        //   if(snapshot.data.length != 0) {
-                            
-                            
                             // return SizedBox(
                             //   width: 600,
                             //   height: 400,
@@ -290,8 +307,12 @@ class NewFeedState extends State<NewFeed> {
                             for (var i = 0; i < snapshot.data.length; i++) 
                           
                             { 
+                              
+                              
                               _controllerList.add(TextEditingController());
+
                                 // โยนค่ำเข้าฟังก์ชัน ให้รีเทิร์น URL
+                                
                               String place = '';
                                   double userSize = 18;
                                   double placeSize = 10;
@@ -334,28 +355,26 @@ class NewFeedState extends State<NewFeed> {
                                       // รูปคนโพสต์
                                       Column(
                                         children: <Widget>[
-                                          Text("        "),
+                                          // Text(_postList.length.toString()),
                                           Row(                                          
                                             children: <Widget>[
-                                              
-                                              // Text("        "),
-                                              // Text(_userList[0].toString()),
-                                              // Container(
-                                              //   width: 40,
-                                              //   child: GestureDetector(
-                                              //     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
-                                              //     child: 
-                                              //       _userList[i] == null ||  _userList[i] == '' 
-                                              //       ? new ProfilePics(
-                                              //         path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
-                                              //         diameter: 40,
-                                              //       )
-                                              //       : new ProfilePics(
-                                              //         path:  _userList[i],
-                                              //         diameter: 40,
-                                              //       )
-                                              //   )
-                                              // ),
+                                              Text("        "),
+                                              Container(
+                                                width: 40,
+                                                child: GestureDetector(
+                                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
+                                                  child: 
+                                                    urlUserPost == null || urlUserPost == '' 
+                                                    ? new ProfilePics(
+                                                      path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                                                      diameter: 40,
+                                                    )
+                                                    : new ProfilePics(
+                                                      path: urlUserPost,
+                                                      diameter: 40,
+                                                    )
+                                                )
+                                              ),
                                               Text("   "),
 
                                               // ชื่อของคนโพสต์
@@ -367,33 +386,37 @@ class NewFeedState extends State<NewFeed> {
                                                       StreamBuilder<QuerySnapshot>(
                                                         stream: _db.collection('users').snapshots(),
                                                         builder: (context, snapshot2) {
-                                                          if(snapshot2.hasData) {
-                                                            if(snapshot2.data.documents.length != 0) {
-                                                              String userpost = "";
-                                                              for (var item in snapshot2.data.documents) {
-                                                                if(item.documentID == snapshot.data[i]['user']) {
-                                                                  userpost = item['fname'] + ' ' + item['lname'];
-                                                                }
-                                                              }
-                                                              if (userpost == "") userpost = "ไม่ประสงค์จะออกนาม";
-                                                              return Column(
-                                                                children: <Widget>[
-                                                                  Text(
-                                                                    userpost,
-                                                                    style: new TextStyle(
-                                                                      fontSize: userSize,
-                                                                      color: Colors.black,
-                                                                      fontWeight: FontWeight.bold              
-                                                                    ),  
-                                                                  ),
-                                                                ],
-                                                              );
-                                                            }
-                                                            else return Text('');
+                                                          var allData = snapshot2.data;
+                                                          if(allData == null) {  
+                                                            return Center(
+                                                              child: CircularProgressIndicator(),
+                                                            );
                                                           }
-                                                          else return Text('');
-                                                        }
-                                                        ),
+                                                          if (allData.documents.length == 0) {
+                                                            return Center(
+                                                              child: Text(''),
+                                                            );
+                                                          }
+                                                          String userpost = "";
+                                                          for (var item in snapshot2.data.documents) {
+                                                            if(item.documentID == snapshot.data[i]['user']) {
+                                                              userpost = item['fname'] + ' ' + item['lname'];
+                                                            }
+                                                          }
+                                                          if (userpost == "") userpost = "ไม่ประสงค์จะออกนาม";
+                                                          return Column(
+                                                            children: <Widget>[
+                                                              Text(
+                                                                userpost,
+                                                                style: new TextStyle(
+                                                                  fontSize: userSize,
+                                                                  color: Colors.black,
+                                                                  fontWeight: FontWeight.bold              
+                                                                ),  
+                                                              ),
+                                                            ],
+                                                          );
+                                                        },),
                                                         Text('  '),
                                                         
                                                       ]
@@ -436,17 +459,14 @@ class NewFeedState extends State<NewFeed> {
                                               ),
                                           ),
                                           // รูปโพสต์
+                                          
                                           urlPicPost == null || urlPicPost == ''
-                                          ? new SizedBox(
-                                            width: 0,
-                                            height: 0,
-                                          )
+                                          ? new Image.asset('resources/logo.PNG', width: 125)
                                           : new Image.network(
                                             urlPicPost,
                                             width: 125,
                                             height: 200,
                                           ),
-                                          
                                           // กดดูคอมเมนต์
                                           Row(          
                                             mainAxisAlignment: MainAxisAlignment.end,                                
@@ -533,7 +553,7 @@ class NewFeedState extends State<NewFeed> {
                                                   _controllerList[i].clear();
                                                   setState(() {
                                                     context = context;
-                                                  });
+                                                  });;
                                                   Scaffold.of(context).showSnackBar(new SnackBar(
                                                     content: new Text('คอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
                                                   ));
@@ -556,6 +576,8 @@ class NewFeedState extends State<NewFeed> {
                                             textColor: Colors.white,
                                             color: Colors.red,
                                             onPressed: () {
+                                              _postList.removeAt(i);
+                                              _userList.removeAt(i);
                                               _controllerList.removeAt(snapshot.data.length);
                                               _db.collection('posts').document(snapshot.data[i].documentID).delete();
                                               Scaffold.of(context).showSnackBar(new SnackBar(
@@ -567,46 +589,29 @@ class NewFeedState extends State<NewFeed> {
                                         ],
                                       )))
                                     ); 
-                                    
-                                    
+                              
                               
                             }
                               
-                            
 
-                            
-                            
-                            _isFinish = true;
-                            
-
-                            return new Column(
-                              children: children,
-                            );
-                            
-                                
+                              return
+                                new Column(
+                                children: children,
+                              );
                           }
-                      //     else {
-                      //       return Center(child: CircularProgressIndicator());
-                      //     }
-                      //   }
-                      //   else {
-                      //     return Center(child: CircularProgressIndicator());
-                      //   }
-                      // }
-
+                          
                       
                     ),
                   // ListView.builder(
                     
                   // ),
-                  
                 ),
               )
             ], 
             ),
           ), ]
       ),
+      
     );
   }
-  
 }

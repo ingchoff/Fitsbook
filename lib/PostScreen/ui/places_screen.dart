@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 class PlacesScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    // TODO: implement createState
     return PlacesScreenState();
   }
 }
@@ -19,11 +18,11 @@ class PlacesScreenState extends State<PlacesScreen> {
   GoogleMapController _controller;
   List<Marker> allMarkers = [];
   Set<Marker> _marker = Set();
-  static String address;
+  static String address = '';
+  static LatLng position;
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
         title: Text("Nearby Places"),
@@ -50,6 +49,7 @@ class PlacesScreenState extends State<PlacesScreen> {
       });
     });
     setState(() {
+      position = point;
       _marker.clear();
       _marker.add(Marker(
           markerId: MarkerId(point.toString()),
@@ -71,10 +71,15 @@ class PlacesScreenState extends State<PlacesScreen> {
     } else {
       List<Widget> placeList = [];
         placeList.add(
-          SizedBox(
-              width: 250,
-              height: 250,
-              child: Stack(
+          Padding(
+            padding: EdgeInsets.only(top:10,bottom:10),
+            child: Center(
+              child: Text(address, style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),)
+            )
+          )
+        );
+        placeList.add(
+              Stack(
                 children: [Container(
                   height: MediaQuery.of(context).size.height,
                   width: MediaQuery.of(context).size.width,
@@ -88,21 +93,20 @@ class PlacesScreenState extends State<PlacesScreen> {
                 ),
                 ]
               ),
-            ),
         );
-        for (dynamic i in _places) {
-        placeList.add(
-          Card(
-              child: ListTile(
-              title: Text(i.name),
-              leading: Image.network(i.icon),
-              subtitle: Text(i.vicinity),
-              onTap: (){
-                handleTap(i);
-              },
-            ))
-          );
-        }
+        // for (dynamic i in _places) {
+        // placeList.add(
+        //   Card(
+        //       child: ListTile(
+        //       title: Text(i.name),
+        //       leading: Image.network(i.icon),
+        //       subtitle: Text(i.vicinity),
+        //       onTap: (){
+        //         handleTap(i);
+        //       },
+        //     ))
+        //   );
+        // }
       return  ListView(
         children: placeList
       );

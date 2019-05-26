@@ -1,3 +1,4 @@
+import 'package:fitsbook/Profile/EditProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -170,7 +171,9 @@ class _ProfileState extends State<Profile> {
             Text('Edit Profile'
             ,style: TextStyle(color: Colors.white),),
           // todo: nav ไปหน้า edit profile ตรงงน้
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatedForm(_userProfile, _uid)));
+          },
           ),
         ),
         ButtonTheme(

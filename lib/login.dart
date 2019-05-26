@@ -97,7 +97,7 @@ class LoginState extends State<Login> {
         // Sign in
         FirebaseUser user = await _auth.signInWithEmailAndPassword(email: textValue1.text, password: textValue2.text);
         //check comfirmed email
-        // if (user.isEmailVerified) {
+        if (user.isEmailVerified) {
           setState(() {
             _isLoading = false;
           });
@@ -113,12 +113,12 @@ class LoginState extends State<Login> {
           },merge: true);
           await writeFile(user,token); //save ค่า uid, email, token ลง data.txt
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage(user: user,)));//ถ้า Login สำเร็จจะไปที่หน้าหลักที่มีการดึงข้อมูลมาจาก local storage
-        // } else {
-        //   setState(() {
-        //     _isLoading = false;
-        //   });
-        //   _showDialog();
-        // }
+        } else {
+          setState(() {
+            _isLoading = false;
+          });
+          _showDialog();
+        }
       }catch(e){
         print(e.message);
         setState(() {

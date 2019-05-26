@@ -21,6 +21,7 @@ class Comment extends StatefulWidget {
 
 class CommentState extends State<Comment> {
   final Firestore _db = Firestore.instance;
+  TextEditingController _comment = TextEditingController();
   String urlPicPost;
   final TextEditingController comment_Word = TextEditingController();
   getUrlForPost(String path) async {
@@ -241,10 +242,10 @@ class CommentState extends State<Comment> {
                             child: new TextField(         
                               keyboardType: TextInputType.text,
                               maxLines: 2,
-                              controller: comment_Word,
+                              controller: _comment,
                               style: new TextStyle(
                                 fontSize: 12.0,
-                                color: Colors.lightGreen                 
+                                color: Colors.black                 
                               ),
 
                               decoration: InputDecoration(
@@ -281,7 +282,7 @@ class CommentState extends State<Comment> {
                               // snapshot.data.documents[i]['detail']
                               .add({
                                 'dateCreated': DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch, 
-                                'detail': comment_Word.text,
+                                'detail': _comment.text,
                                 /* This is for Firebase Auth from login state 
                                 Now I use Q's account */
                                 'user' : '${widget.userId}',
@@ -289,6 +290,7 @@ class CommentState extends State<Comment> {
                                 // 'photo' : ["posts/GScRX892knG1XDvQFKjU/hello.jpg"]
                                 }
                               );
+                              _comment.clear();
                               Scaffold.of(context).showSnackBar(new SnackBar(
                                 content: new Text('คอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
                               ));

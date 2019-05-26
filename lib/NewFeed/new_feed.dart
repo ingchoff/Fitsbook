@@ -26,7 +26,7 @@ String userId;
 class NewFeedState extends State<NewFeed> {
   
   final Firestore _db = Firestore.instance;
- 
+  
   @override
   void initState(){
     super.initState();
@@ -41,8 +41,9 @@ class NewFeedState extends State<NewFeed> {
 
   }
 
-  final TextEditingController comment_Word = TextEditingController();
-
+  TextEditingController _comment = TextEditingController();
+  List<TextEditingController> _controllerList = <TextEditingController>[];
+  
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
@@ -216,7 +217,9 @@ class NewFeedState extends State<NewFeed> {
                             // children.add(Text(snapshot.data.length.toString()));
             
                             for (var i = 0; i < snapshot.data.length; i++) 
+                          
                             { 
+                              _controllerList.add(TextEditingController());
                                 // โยนค่ำเข้าฟังก์ชัน ให้รีเทิร์น URL
                               String place = '';
                                   double userSize = 18;
@@ -392,10 +395,10 @@ class NewFeedState extends State<NewFeed> {
                                                     new TextField(         
                                                       keyboardType: TextInputType.text,
                                                       maxLines: 2,
-                                                      
+                                                      controller: _controllerList[i],
                                                       style: new TextStyle(
                                                         fontSize: 12.0,
-                                                        color: Colors.lightGreen                 
+                                                        color: Colors.black                 
                                                       ),
                                                       
                                                       decoration: InputDecoration(
@@ -435,7 +438,7 @@ class NewFeedState extends State<NewFeed> {
                                                   // snapshot.data.documents[i]['detail']
                                                   .add({
                                                     'dateCreated': DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch, 
-                                                    'detail': comment_Word.text,
+                                                    'detail': _controllerList[i].text,
                                                     /* This is for Firebase Auth from login state 
                                                     Now I use Q's account */
                                                     'user' : '$userId',
@@ -443,6 +446,10 @@ class NewFeedState extends State<NewFeed> {
                                                     // 'photo' : ["posts/GScRX892knG1XDvQFKjU/hello.jpg"]
                                                     }
                                                   );
+                                                  _controllerList[i].clear();
+                                                  setState(() {
+                                                    context = context;
+                                                  });;
                                                   Scaffold.of(context).showSnackBar(new SnackBar(
                                                     content: new Text('คอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
                                                   ));
@@ -465,6 +472,7 @@ class NewFeedState extends State<NewFeed> {
                                             textColor: Colors.white,
                                             color: Colors.red,
                                             onPressed: () {
+                                              _controllerList.removeAt(snapshot.data.length);
                                               _db.collection('posts').document(snapshot.data[i].documentID).delete();
                                               Scaffold.of(context).showSnackBar(new SnackBar(
                                                 content: new Text('ลบโพสต์ดังกล่าวเรียบร้อยแล้ว'),

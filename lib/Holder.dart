@@ -1,4 +1,4 @@
-import 'package:fitsbook/Chat/homepage.dart';
+import 'package:fitsbook/Chat/ChatScreen.dart';
 
 import './Login.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class Holder extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
         },
         child: Icon(Icons.chat),
       ),

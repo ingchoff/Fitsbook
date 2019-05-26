@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:fitsbook/Chat/homepage.dart';
+import 'package:fitsbook/Chat/ChatScreen.dart';
 import 'package:fitsbook/PostScreen/ui/post_screen.dart';
 import 'package:fitsbook/Profile.dart';
 import 'package:fitsbook/Profile/ProfilePic.dart';
@@ -547,7 +547,7 @@ class NewFeedState extends State<NewFeed> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
         },
         child: Icon(Icons.chat),
       ),

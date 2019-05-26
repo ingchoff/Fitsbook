@@ -45,7 +45,8 @@ class _MainPageState extends State<MainPage> {
             currentIndex: index,
             items: [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.home), title: Text('Home')),
+                  icon: Icon(Icons.home), 
+                  title: Text('Home')),
               BottomNavigationBarItem(
                 icon: Icon(Icons.notifications),
                 title: Text('Notifications'),

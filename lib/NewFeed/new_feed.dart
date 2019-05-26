@@ -118,13 +118,13 @@ class NewFeedState extends State<NewFeed> {
 
   // ดึงโพสต์
   Future getAllPost() async {
-    QuerySnapshot data = await _db.collection('posts').orderBy('dateCreated').getDocuments();
+    QuerySnapshot data = await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
     return data.documents;
   }
 
   // ดึงคอมเมนต์
   Future getAllComment(documentId) async {
-    QuerySnapshot data = await _db.collection('posts').document(documentId).collection('comments').orderBy('dateCreated').getDocuments();
+    QuerySnapshot data = await _db.collection('posts').document(documentId).collection('comments').orderBy('dateCreated', descending: true).getDocuments();
     return data.documents;
   }
   
@@ -152,19 +152,20 @@ class NewFeedState extends State<NewFeed> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   
-                  new Container(
-                    margin: EdgeInsets.only(top: 24.0),              
-                    width: 300.0,
-                    decoration: BoxDecoration(
-                      color: Colors.lightGreen[200],
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 2.0,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: new Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  new Expanded(
+                    // margin: EdgeInsets.only(top: 24.0),              
+                    // //width: 300.0,
+                    // decoration: BoxDecoration(
+                    //   color: Colors.lightGreen[200],
+                    //   border: Border.all(
+                    //     color: Colors.black,
+                    //     width: 2.0,
+                    //   ),
+                    //   borderRadius: BorderRadius.circular(12),
+                    // ),
+                    child: 
+                      new Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         userPic == null   || userPic == ''  || userPic == ''
                         ? new Image.asset('resources/logo.PNG', height: 30)
@@ -172,7 +173,7 @@ class NewFeedState extends State<NewFeed> {
                           userPic,
                           height: 30,
                         ),
-                        Text('    คุณกำลังคิดอะไรอยู่ ?    '),
+                        Text('คุณกำลังคิดอะไรอยู่ ?', style: TextStyle(fontSize: 16),),
                         RaisedButton(
                           padding: const EdgeInsets.all(8.0),
                           child: Text("บอกให้เรารู้"),
@@ -197,12 +198,24 @@ class NewFeedState extends State<NewFeed> {
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         if(snapshot.hasData) {
                           if(snapshot.data.length != 0) {
-                            return SizedBox(
-                              width: 320,
-                              height: 400,
-                              child: ListView.builder(
-                                itemBuilder: (BuildContext context, int i) {
-                                  String place = '';
+                            // return SizedBox(
+                            //   width: 600,
+                            //   height: 400,
+                            //   child: 
+                            //   ListView.builder(
+                            //     itemBuilder: (BuildContext context, int i) {
+                                  
+                            //     },
+                            //     itemCount: snapshot.data.length,
+                            //   ),
+                            // );
+                            final children = <Widget>[];
+                            // children.add(Text(snapshot.data.length.toString()));
+            
+                            for (var i = 0; i < snapshot.data.length; i++) 
+                            { 
+                                // โยนค่ำเข้าฟังก์ชัน ให้รีเทิร์น URL
+                              String place = '';
                                   double userSize = 18;
                                   double placeSize = 10;
                                   double frameSize = 475;
@@ -222,15 +235,15 @@ class NewFeedState extends State<NewFeed> {
                                   }
                                   getUrlForPost(snapshot.data[i].documentID);  
                                   getUrlForPostUser(snapshot.data[i]['user']);
-                                  return (
+                                  children.add (
                                     GestureDetector(
                                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
                                     child: 
                                     Container(
                                       padding: EdgeInsets.only(top: 10.0, bottom: 10.0), 
-                                      margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-                                      width: 300,
-                                      height: frameSize,
+                                      margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, snapshot.data.length != i ? 10.0 : 50.0),
+                                      //width: 300,
+                                      //height: frameSize,
                                       decoration: BoxDecoration(
                                         color: Colors.lightGreen[200],
                                         border: Border.all(
@@ -436,23 +449,14 @@ class NewFeedState extends State<NewFeed> {
                                           : Text(''),
                                         ],
                                       )))
-                                    );
-                                },
-                                itemCount: snapshot.data.length,
-                              ),
-                            );
-                            final children = <Widget>[];
-                            // children.add(Text(snapshot.data.length.toString()));
-            
-                            for (var i = 0; i < snapshot.data.length; i++) 
-                            { 
-                                // โยนค่ำเข้าฟังก์ชัน ให้รีเทิร์น URL
-                                
-                              // }
-                              // return new Column(
-                              //   children: children,
-                              // );
+                                    ); 
+                              
+                              
                             }
+                            return 
+                                new Column(
+                                children: children,
+                              );
                           }
                           else {
                             return Center(child: CircularProgressIndicator());

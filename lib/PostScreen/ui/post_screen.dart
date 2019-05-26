@@ -11,6 +11,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:location/location.dart';
 import 'package:flutter/services.dart';
+import 'package:fitsbook/main.dart';
 
 
 class PostForm extends StatefulWidget {
@@ -218,7 +219,7 @@ class PostFormState extends State {
                   );
 
                   
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => MainPage()));
+                  Navigator.of(context).pushReplacementNamed('/main');
                 },
               ),
               
@@ -270,7 +271,7 @@ class PostFormState extends State {
   @override
   void initState() {
     super.initState();
-
+    tagged = "";
     //เซ็ต Latitude, Longitude ตอนเริ่มเป็น 0
     currentLocation['latitude'] = 0.0;
     currentLocation['longitude'] = 0.0;

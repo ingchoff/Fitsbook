@@ -10,6 +10,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path_provider/path_provider.dart';
 
+final DateTime _now = DateTime.now();
+
 class NewFeed extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -31,6 +33,7 @@ class NewFeedState extends State<NewFeed> {
   @override
   void initState(){
     super.initState();
+    
     // สำหรับเรียกภาพผู้ใช้ตอนโพสต์
     _scrollController = ScrollController();
     readFile('profile').then((String value){
@@ -211,16 +214,27 @@ class NewFeedState extends State<NewFeed> {
                   )
                 ],
               ),
-              
               // วนลูปโพสต์ เพื่อแสดงโพสต์
               Container(
-                child: Center(
+                
+                margin: EdgeInsets.only(top: 20.0),
+                child: 
+                Center(
                   child: 
+                    
                     FutureBuilder<dynamic>(
                       future: getAllPost(),
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        
+                        if (_now.microsecondsSinceEpoch.compareTo(DateTime.now().millisecondsSinceEpoch) == 6) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        }
+                            
                         if(snapshot.hasData) {
                           if(snapshot.data.length != 0) {
+                            
                             // return SizedBox(
                             //   width: 600,
                             //   height: 400,
@@ -234,7 +248,7 @@ class NewFeedState extends State<NewFeed> {
                             // );
                             final children = <Widget>[];
                             // children.add(Text(snapshot.data.length.toString()));
-            
+                            
                             for (var i = 0; i < snapshot.data.length; i++) 
                           
                             { 
@@ -289,7 +303,7 @@ class NewFeedState extends State<NewFeed> {
                                               Container(
                                                 width: 40,
                                                 child: GestureDetector(
-                                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(userId))),
+                                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
                                                   child: 
                                                     urlUserPost == null || urlUserPost == '' 
                                                     ? new ProfilePics(
@@ -505,7 +519,9 @@ class NewFeedState extends State<NewFeed> {
                               
                               
                             }
-                            return 
+                              
+
+                              return
                                 new Column(
                                 children: children,
                               );

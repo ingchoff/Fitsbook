@@ -38,7 +38,7 @@ class CommentState extends State<Comment> {
   String urlUserPost;
   getUrlForPostUser(String userId) async {
     StorageReference ref = 
-        FirebaseStorage.instance.ref().child("profile/$userId/profile.jpg");
+        FirebaseStorage.instance.ref().child("profile/$userId/profile");
     String url = (await ref.getDownloadURL()).toString();
     // print(url);
     if (url == null) url = 'https://upload.wikimedia.org/wikipedia/commons/d/d2/Question_mark.svg';
@@ -300,6 +300,7 @@ class CommentState extends State<Comment> {
                       ),
                       
                       Container(
+                        margin: EdgeInsets.only(top: 20.0),
                         child: Center(
                           child: 
                             FutureBuilder<dynamic>(

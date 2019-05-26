@@ -170,10 +170,9 @@ class _ProfileState extends State<Profile> {
             child: 
             Text('Edit Profile'
             ,style: TextStyle(color: Colors.white),),
-            // todo: nav ไปหน้า edit profile ตรงงน้
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatedForm()));
-            },
+          onPressed: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatedForm(_userProfile, _uid)));
+          },
           ),
         ),
         ButtonTheme(

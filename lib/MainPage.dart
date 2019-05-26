@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitsbook/FeatureList.dart';
 import 'package:fitsbook/FriendRequest.dart';
 import 'package:fitsbook/FriendRequest/RequestList.dart';
+import 'package:fitsbook/Map.dart';
 import 'package:flutter/material.dart';
 import './Holder.dart';
 import './NewFeed/new_feed.dart';
@@ -25,7 +26,7 @@ class _MainPageState extends State<MainPage> {
   List<Widget> _children = [
       NewFeed(),
       FriendRequest(),
-      Holder('Map'),
+      MyHomePage(),
       Profile(),
       FeatureList()
     ];

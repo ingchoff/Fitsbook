@@ -136,6 +136,8 @@ class UpdatedFormState extends State<UpdatedForm> {
       setState(() {
         _isLoading = true;
       });
+    } else {
+      
     }
     final StorageReference firebaseStorageRef =
         FirebaseStorage.instance.ref().child('profile/${_uid}/profile');

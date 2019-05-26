@@ -33,6 +33,7 @@ dependencies:
   http: any
   random_string: ^0.0.2
   datetime_picker_formfield: ^0.1.8
+  google_maps_flutter:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

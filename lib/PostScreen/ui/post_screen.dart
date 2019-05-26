@@ -219,7 +219,7 @@ class PostFormState extends State {
                   );
 
                   
-                  Navigator.of(context).pushReplacementNamed('/main');
+                  Navigator.pop(context);
                 },
               ),
               

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:fitsbook/Chat/homepage.dart';
 import 'package:fitsbook/PostScreen/ui/post_screen.dart';
 import 'package:fitsbook/Profile.dart';
+import 'package:fitsbook/Profile/ProfilePic.dart';
 import './comment.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -122,11 +123,7 @@ class NewFeedState extends State<NewFeed> {
     return data.documents;
   }
 
-  // ดึงคอมเมนต์
-  Future getAllComment(documentId) async {
-    QuerySnapshot data = await _db.collection('posts').document(documentId).collection('comments').orderBy('dateCreated', descending: true).getDocuments();
-    return data.documents;
-  }
+  
   
 
   @override
@@ -167,11 +164,17 @@ class NewFeedState extends State<NewFeed> {
                       new Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
-                        userPic == null   || userPic == ''  || userPic == ''
-                        ? new Image.asset('resources/logo.PNG', height: 30)
-                        : new Image.network(
-                          userPic,
-                          height: 30,
+                        GestureDetector(
+                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(userId))),
+                          child: userPic == null   || userPic == ''  || userPic == ''
+                          ? new ProfilePics(
+                            path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                            diameter: 40,
+                          )
+                          : new ProfilePics(
+                            path: userPic,
+                            diameter: 40,
+                          )
                         ),
                         Text('คุณกำลังคิดอะไรอยู่ ?', style: TextStyle(fontSize: 16),),
                         RaisedButton(
@@ -233,8 +236,8 @@ class NewFeedState extends State<NewFeed> {
                                     userSize = 18;
                                     placeSize = 0;
                                   }
-                                  getUrlForPost(snapshot.data[i].documentID);  
-                                  getUrlForPostUser(snapshot.data[i]['user']);
+                                  // getUrlForPost(snapshot.data[i].documentID);  
+                                  // getUrlForPostUser(snapshot.data[i]['user']);
                                   children.add (
                                     GestureDetector(
                                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
@@ -261,12 +264,21 @@ class NewFeedState extends State<NewFeed> {
                                           Row(                                          
                                             children: <Widget>[
                                               Text("        "),
-                                              urlUserPost == null || urlUserPost == ''
-                                              ? new Image.asset('resources/logo.PNG', fit: BoxFit.cover, width: 25,)
-                                              : new Image.network(
-                                                urlUserPost,
+                                              Container(
                                                 width: 40,
-                                                height: 40,
+                                                child: GestureDetector(
+                                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(userId))),
+                                                  child: 
+                                                    urlUserPost == null || urlUserPost == '' 
+                                                    ? new ProfilePics(
+                                                      path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                                                      diameter: 40,
+                                                    )
+                                                    : new ProfilePics(
+                                                      path: urlUserPost,
+                                                      diameter: 40,
+                                                    )
+                                                )
                                               ),
                                               Text("   "),
 
@@ -277,7 +289,7 @@ class NewFeedState extends State<NewFeed> {
                                                   Row(
                                                     children: <Widget>[
                                                       StreamBuilder<QuerySnapshot>(
-                                                        stream: Firestore.instance.collection('users').snapshots(),
+                                                        stream: _db.collection('users').snapshots(),
                                                         builder: (context, snapshot2) {
                                                           String userpost = "";
                                                           for (var item in snapshot2.data.documents) {
@@ -373,31 +385,44 @@ class NewFeedState extends State<NewFeed> {
                                               new Container(
                                                 padding: EdgeInsets.only(top: 5.0),              
                                                 width: 180.0,
-                                                child: new TextField(         
-                                                  keyboardType: TextInputType.text,
-                                                  maxLines: 2,
+                                                child: Column(
                                                   
-                                                  style: new TextStyle(
-                                                    fontSize: 12.0,
-                                                    color: Colors.lightGreen                 
-                                                  ),
-                                                  
-                                                  decoration: InputDecoration(
-                                                    fillColor: Colors.white,
-                                                    labelText: 'Write comment...',
-                                                    prefixIcon: Container( 
-                                                      padding: EdgeInsets.all(3.0),
-                                                      child:
-                                                      userPic == null  || userPic == '' 
-                                                        ? new Image.asset('resources/logo.PNG', height: 30)
-                                                        : new Image.network(
-                                                          userPic,
-                                                          height: 30,
+                                                  children: <Widget>[ 
+                                                    
+                                                    new TextField(         
+                                                      keyboardType: TextInputType.text,
+                                                      maxLines: 2,
+                                                      
+                                                      style: new TextStyle(
+                                                        fontSize: 12.0,
+                                                        color: Colors.lightGreen                 
+                                                      ),
+                                                      
+                                                      decoration: InputDecoration(
+                                                        fillColor: Colors.white,
+                                                        labelText: 'Write comment...',
+                                                        prefixIcon: Container(
+                                                          width: 15,
+                                                          child: GestureDetector(
+                                                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(userId))),
+                                                            child: 
+                                                              userPic == null   || userPic == '' 
+                                                            ? new ProfilePics(
+                                                              path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                                                              diameter: 30,
+                                                            )
+                                                            : new ProfilePics(
+                                                              path: userPic,
+                                                              diameter: 30,
+                                                            )
+                                                          )
                                                         ),
+                                                        
+                                                        
+                                                        // border: OutlineInputBorder()
+                                                      ),
                                                     ),
-                                                    // border: OutlineInputBorder()
-                                                  ),
-                                                )
+                                                  ])
                                               ),
                                               RaisedButton(
                                                 padding: const EdgeInsets.all(10.0),
@@ -414,8 +439,8 @@ class NewFeedState extends State<NewFeed> {
                                                     /* This is for Firebase Auth from login state 
                                                     Now I use Q's account */
                                                     'user' : '$userId',
-                                                    /* This is for Photo Adding  */
-                                                    'photo' : ["posts/GScRX892knG1XDvQFKjU/hello.jpg"]
+                                                    // /* This is for Photo Adding  */
+                                                    // 'photo' : ["posts/GScRX892knG1XDvQFKjU/hello.jpg"]
                                                     }
                                                   );
                                                   Scaffold.of(context).showSnackBar(new SnackBar(
@@ -440,7 +465,7 @@ class NewFeedState extends State<NewFeed> {
                                             textColor: Colors.white,
                                             color: Colors.red,
                                             onPressed: () {
-                                              Firestore.instance.collection('posts').document(snapshot.data[i].documentID).delete();
+                                              _db.collection('posts').document(snapshot.data[i].documentID).delete();
                                               Scaffold.of(context).showSnackBar(new SnackBar(
                                                 content: new Text('ลบโพสต์ดังกล่าวเรียบร้อยแล้ว'),
                                               ));

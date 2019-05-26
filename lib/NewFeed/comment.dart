@@ -1,5 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fitsbook/NewFeed/new_feed.dart';
+import 'package:fitsbook/Profile.dart';
+import 'package:fitsbook/Profile/ProfilePic.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -18,6 +20,7 @@ class Comment extends StatefulWidget {
 }
 
 class CommentState extends State<Comment> {
+  final Firestore _db = Firestore.instance;
   String urlPicPost;
   final TextEditingController comment_Word = TextEditingController();
   getUrlForPost(String path) async {
@@ -42,6 +45,12 @@ class CommentState extends State<Comment> {
       urlUserPost = url;
     });
   }
+
+  // ดึงคอมเมนต์
+  Future getAllComment(documentId) async {
+    QuerySnapshot data = await _db.collection('posts').document(documentId).collection('comments').orderBy('dateCreated', descending: true).getDocuments();
+    return data.documents;
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -56,7 +65,7 @@ class CommentState extends State<Comment> {
           children: <Widget>[
           Container(
             child: StreamBuilder<QuerySnapshot>(
-              stream: Firestore.instance.collection('posts').orderBy("dateCreated").snapshots(),
+              stream: _db.collection('posts').orderBy("dateCreated", descending: true).snapshots(),
               builder: (context, snapshot) {
                 if(snapshot.data == null) {
                   return Center(child: CircularProgressIndicator());
@@ -87,7 +96,8 @@ class CommentState extends State<Comment> {
                 }
 
                 
-                return new Column(
+                return new 
+                Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children : <Widget>[
                     Text('             '),
@@ -104,25 +114,38 @@ class CommentState extends State<Comment> {
                       //   ),
                       //   borderRadius: BorderRadius.circular(12)
                       // ),
-                      child: Column(     
+                      child: GestureDetector(
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data.documents[widget.no]['user']))),
+                        child: new
+                      Column(     
                         crossAxisAlignment: CrossAxisAlignment.start,                                     
                         children: <Widget>[
                           Row(children: <Widget>[
 
                           Text("        "),
-                          urlUserPost == null 
-                          ? new Image.asset('resources/logo.PNG', fit: BoxFit.cover, width: 25,)
-                          : new Image.network(
-                            urlUserPost,
+                          Container(
                             width: 40,
-                            height: 40,
-                          ),
+                             child: GestureDetector(
+                               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data.documents[widget.no]['user']))),
+                               child: 
+                                 urlUserPost == null || urlUserPost == '' 
+                                 ? new ProfilePics(
+                                   path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                                   diameter: 40,
+                                 )
+                                 : new ProfilePics(
+                                   path: urlUserPost,
+                                   diameter: 40,
+                                 )
+                             )
+                           ),
+                         
                           Text("   "),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           StreamBuilder<QuerySnapshot>(
-                          stream: Firestore.instance.collection('users').snapshots(),
+                          stream: _db.collection('users').snapshots(),
                           builder: (context, snapshot2) {
                             String userpost = "";
                             for (var item in snapshot2.data.documents) {
@@ -206,7 +229,7 @@ class CommentState extends State<Comment> {
                         //    }
                         //  ),
                         ],
-                      )),
+                      ))),
                      
                       Row (
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -227,16 +250,22 @@ class CommentState extends State<Comment> {
                               decoration: InputDecoration(
                                 fillColor: Colors.white,
                                 labelText: 'Write comment...',
-                                prefixIcon: Container( 
-                                  padding: EdgeInsets.all(3.0),
-                                  child:
-                                  userPic == null  || userPic == '' 
-                                  ? new Image.asset('resources/logo.PNG', height: 30)
-                                  : new Image.network(
-                                    userPic,
-                                    height: 30,
-                                  ),
-                                ),
+                                prefixIcon: Container(
+                                  width: 15,
+                                   child: GestureDetector(
+                                     onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(userId))),
+                                     child: 
+                                       userPic == null   || userPic == '' 
+                                     ? new ProfilePics(
+                                       path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                                       diameter: 30,
+                                     )
+                                     : new ProfilePics(
+                                       path: userPic,
+                                       diameter: 30,
+                                     )
+                                   )
+                                 ),
                                 // border: OutlineInputBorder()
                               ),
                             )
@@ -248,7 +277,7 @@ class CommentState extends State<Comment> {
                             color: Colors.green,
                             onPressed: () {
                               //datas.collection('posts')
-                              Firestore.instance.collection('posts').document(snapshot.data.documents[widget.no].documentID).collection('comments')
+                              _db.collection('posts').document(snapshot.data.documents[widget.no].documentID).collection('comments')
                               // snapshot.data.documents[i]['detail']
                               .add({
                                 'dateCreated': DateTime.parse(DateTime.now().toString()).millisecondsSinceEpoch, 
@@ -256,8 +285,8 @@ class CommentState extends State<Comment> {
                                 /* This is for Firebase Auth from login state 
                                 Now I use Q's account */
                                 'user' : '${widget.userId}',
-                                /* This is for Photo Adding  */
-                                'photo' : ["posts/GScRX892knG1XDvQFKjU/hello.jpg"]
+                                // /* This is for Photo Adding  */
+                                // 'photo' : ["posts/GScRX892knG1XDvQFKjU/hello.jpg"]
                                 }
                               );
                               Scaffold.of(context).showSnackBar(new SnackBar(
@@ -269,122 +298,212 @@ class CommentState extends State<Comment> {
                       ),
                       
                       Container(
-                        child: StreamBuilder<QuerySnapshot>(
-                        stream: Firestore.instance.collection('posts').document(snapshot.data.documents[widget.no].documentID).collection('comments').orderBy("dateCreated").snapshots(),
-                        builder: (context, snapshot2) {
-                            if(snapshot.data == null) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                            if (!snapshot.hasData) {
-                              return Center(child: CircularProgressIndicator());
-                            }
-                              final children = <Widget>[];
-                              for (var i = 0; i < snapshot2.data.documents.length; i++) {
-                                children.add(
-                                  Container(
-                                    padding: EdgeInsets.only(top: 20.0), 
-                                    margin: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 0.0),
-                                    width: 300,
-                                    height: 130,
-                                    decoration: BoxDecoration(
-                                      color: Colors.lightGreen[200],
-                                      border: Border.all(
-                                        color: Colors.black,
-                                        width: 2.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(12)
-                                    ),
-                                    child: Column(
-                                      children: <Widget>[
-                                        StreamBuilder<QuerySnapshot>(
-                                          stream: Firestore.instance.collection('users').snapshots(),
-                                          builder: (context, snapshot3) {
-                                            String userpost = "";
-                                            for (var item in snapshot3.data.documents) {
-                                              if (item.documentID == snapshot2.data.documents[i]['user']) {
-                                                userpost = item['fname'] + ' ' + item['lname'];
-                                              }
-                                            }
-                                            if (userpost == "") userpost = "ไม่ประสงค์จะออกนาม";
-                                            return Column(
-                                              children: <Widget>[
-                                                Text(
-                                                  userpost,
-                                                  style: new TextStyle(
-                                                    fontSize: 18.0,
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.bold                   
-                                                  ),  
-                                                ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                        // Text('' + 
-                                        
-                                        //   snapshot2.data.documents[i]['user'],
-                                        //   style: new TextStyle(
-                                        //     fontSize: 12.0,
-                                        //     color: Colors.lightGreen                 
-                                        //   ),  
-                                        // ),
-
-                                        Image.asset(['photo'][0]),
-
-                                        Text('โพสต์เมื่อ : ' + 
-                                          DateTime.fromMillisecondsSinceEpoch(snapshot2.data.documents[i]['dateCreated']).toIso8601String().toString().substring(0, 10) + ' ' +                                             
-                                          DateTime.fromMillisecondsSinceEpoch(snapshot2.data.documents[i]['dateCreated']).toIso8601String().toString().substring(11, 16)
-                                          ,
-                                          style: new TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.blueGrey              
-                                          ),  
-                                        ),
-
-                                        Container(
-                                          padding: EdgeInsets.only(left:10, right: 10),
-                                          child: 
-                                            Text(
-                                              snapshot2.data.documents[i]['detail'],
-                                              style: new TextStyle(
-                                                fontSize: 18.0,
-                                                color: Colors.black              
-                                              ),  
-                                              overflow: TextOverflow.ellipsis, 
-                                              maxLines: 10,
-                                            ),
-                                          ),
-
-                                        
-                                        widget.userId == snapshot.data.documents[widget.no]['user']
-                                        ? FlatButton(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text("ลบ"),
-                                          textColor: Colors.white,
-                                          color: Colors.red,
-                                          onPressed: () {
-                                            Firestore.instance.collection('posts').document(snapshot.data.documents[widget.no].documentID)
-                                            .collection('comments').document(snapshot2.data.documents[i].documentID).delete();
-                                            Scaffold.of(context).showSnackBar(new SnackBar(
-                                              content: new Text('ลบคอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
-                                            ));
+                        child: Center(
+                          child: 
+                            FutureBuilder<dynamic>(
+                              future: getAllComment(snapshot.data.documents[widget.no].documentID),
+                              builder: (BuildContext context, AsyncSnapshot snapshot2) {
+                                if(snapshot2.hasData) {
+                                  if(snapshot2.data.length != 0) {
+                                    // return SizedBox(
+                                    //   width: 600,
+                                    //   height: 400,
+                                    //   child: 
+                                    //   ListView.builder(
+                                    //     itemBuilder: (BuildContext context, int i) {
+                                          
+                                    //     },
+                                    //     itemCount: snapshot.data.length,
+                                    //   ),
+                                    // );
+                                    final children = <Widget>[];
+                                    // children.add(Text(snapshot.data.length.toString()));
+                    
+                                    for (var i = 0; i < snapshot2.data.length; i++) 
+                                    { 
+                                        // โยนค่ำเข้าฟังก์ชัน ให้รีเทิร์น URL
+                                      String place = '';
+                                          double userSize = 18;
+                                          double placeSize = 10;
+                                          double frameSize = 475;
+                                          if (snapshot2.data[i]['place'] == null || snapshot2.data[i]['place'] == '') {
+                                            userSize = 18;
+                                            placeSize = 0;
+                                          } 
+                                          else {
+                                            userSize = 12;
+                                            place = 'อยู่ที่ ' + snapshot2.data[i]['place'];
+                                            if (place.length > 40) { place = place.substring(0, 40) + '...'; }
+                                          } 
+                              
+                                          if (place == '') {
+                                            userSize = 18;
+                                            placeSize = 0;
                                           }
-                                        )
-                                        : Text('')
-                                      ,
-                                      ],
-                                    ))
-                                  );
-                                  
-                                  
+                                          getUrlForPostUser(snapshot2.data[i]['user']);
+                                          children.add (
+                                            GestureDetector(
+                                            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot2.data[i]['user']))),
+                                            child: 
+                                            Container(
+                                              padding: EdgeInsets.only(top: 10.0, bottom: 10.0), 
+                                              margin: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, snapshot2.data.length != i ? 10.0 : 50.0),
+                                              //width: 300,
+                                              //height: frameSize,
+                                              decoration: BoxDecoration(
+                                                color: Colors.lightGreen[200],
+                                                border: Border.all(
+                                                  color: Colors.black,
+                                                  width: 2.0,
+                                                ),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              child: 
+
+                                              // รูปคนโพสต์
+                                              Column(
+                                                children: <Widget>[
+                                                  Text("        "),
+                                                  Row(                                          
+                                                    children: <Widget>[
+                                                      Text("        "),
+                                                      Container(
+                                                        width: 40,
+                                                        child: GestureDetector(
+                                                          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot2.data[i]['user']))),
+                                                          child: 
+                                                            urlUserPost == null || urlUserPost == '' 
+                                                            ? new ProfilePics(
+                                                              path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
+                                                              diameter: 40,
+                                                            )
+                                                            : new ProfilePics(
+                                                              path: urlUserPost,
+                                                              diameter: 40,
+                                                            )
+                                                        )
+                                                      ),
+                                                      Text("   "),
+
+                                                      // ชื่อของคนโพสต์
+                                                      Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: <Widget>[
+                                                          Row(
+                                                            children: <Widget>[
+                                                              StreamBuilder<QuerySnapshot>(
+                                                                stream: _db.collection('users').snapshots(),
+                                                                builder: (context, snapshot3) {
+                                                                  String userpost = "";
+                                                                  for (var item in snapshot3.data.documents) {
+                                                                    if(item.documentID == snapshot2.data[i]['user']) {
+                                                                      userpost = item['fname'] + ' ' + item['lname'];
+                                                                    }
+                                                                  }
+                                                                  if (userpost == "") userpost = "ไม่ประสงค์จะออกนาม";
+                                                                  return Column(
+                                                                    children: <Widget>[
+                                                                      Text(
+                                                                        userpost,
+                                                                        style: new TextStyle(
+                                                                          fontSize: userSize,
+                                                                          color: Colors.black,
+                                                                          fontWeight: FontWeight.bold              
+                                                                        ),  
+                                                                      ),
+                                                                    ],
+                                                                  );
+                                                                },),
+                                                                Text('  '),
+                                                                
+                                                              ]
+                                                            ),
+                                                            // สถานที่ที่เช็คอิน (ถ้ามี)
+                                                            Text(
+                                                              place,
+                                                              style: new TextStyle(
+                                                                fontSize: placeSize,
+                                                                color: Colors.black,           
+                                                              ),  
+                                                            ),
+                                                            // เวลาโพสต์
+                                                            Text('โพสต์เมื่อ : ' + 
+                                                              DateTime.fromMillisecondsSinceEpoch(snapshot2.data[i]['dateCreated']).toIso8601String().toString().substring(0, 10) + ' ' +                                             
+                                                              DateTime.fromMillisecondsSinceEpoch(snapshot2.data[i]['dateCreated']).toIso8601String().toString().substring(11, 16)
+                                                              ,
+                                                              style: new TextStyle(
+                                                                fontSize: 12.0,
+                                                                color: Colors.blueGrey              
+                                                              ),  
+                                                            ),
+                                                        ]
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Text("        "),
+                                                  // ช้อมูลของโพสต์
+                                                  Container(
+                                                    padding: EdgeInsets.only(left:10, right: 10),
+                                                    child: 
+                                                      Text(
+                                                        snapshot2.data[i]['detail'] + '\n',
+                                                        style: new TextStyle(
+                                                          fontSize: 18.0,
+                                                          color: Colors.black              
+                                                        ),  
+                                                        overflow: TextOverflow.ellipsis, 
+                                                        maxLines: 10,
+                                                      ),
+                                                  ),
+                                                  
+                                                  // ปุ่มลบโพสต์
+                                                  userId == snapshot2.data[i]['user']
+                                                  ? FlatButton(
+                                                    padding: const EdgeInsets.only(top: 5.0),
+                                                    child: Text("ลบ"),
+                                                    textColor: Colors.white,
+                                                    color: Colors.red,
+                                                    onPressed: () {
+                                                      _db.collection('posts').document(snapshot.data.documents[widget.no].documentID)
+                                                      .collection('comments').document(snapshot2.data[i].documentID).delete();
+                                                      Scaffold.of(context).showSnackBar(new SnackBar(
+                                                        content: new Text('ลบคอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
+                                                      ));
+                                                      // _db.collection('posts').document(snapshot.data[i].documentID).delete();
+                                                      // Scaffold.of(context).showSnackBar(new SnackBar(
+                                                      //   content: new Text('ลบโพสต์ดังกล่าวเรียบร้อยแล้ว'),
+                                                      // ));
+                                                    }
+                                                  )
+                                                  : Text(''),
+                                                ],
+                                              )))
+                                            ); 
+                                      
+                                      
+                                    }
+                                    return 
+                                        new Column(
+                                        children: children,
+                                      );
+                                  }
+                                  else {
+                                    return Center(child: CircularProgressIndicator());
+                                  }
+                                }
+                                else {
+                                  return Center(child: CircularProgressIndicator());
+                                }
                               }
-                              return new Column(
-                                children: children,
-                              );
-                                              
-                        },
-                      )
-                    )
+                              
+                            ),
+                          // ListView.builder(
+                            
+                          // ),
+                        ),
+                      ),
+
+                      
                   ]
                 );           
                 },

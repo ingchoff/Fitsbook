@@ -91,15 +91,9 @@ class PlacesScreenState extends State<PlacesScreen> {
               ),
             ),
         );
-<<<<<<< HEAD
         // placeList.add(
         //   Text()
         // );
-=======
-        placeList.add(
-          Text('')
-        );
->>>>>>> 18b28b81edc6901681c3fbb867d2be25c2021f17
         for (dynamic i in _places) {
         placeList.add(
           Card(

@@ -136,12 +136,11 @@ class UpdatedFormState extends State<UpdatedForm> {
     final StorageReference firebaseStorageRef =
         FirebaseStorage.instance.ref().child('profile/${_uid}/profile');
     final StorageUploadTask task = firebaseStorageRef.putFile(image);
-    String tmpUrl = firebaseStorageRef.getDownloadURL().toString();
-    var downUrl = await (await task.onComplete).ref.getDownloadURL();
-    var url = downUrl.toString();
-    print(url);
-    setState(() {
-      _image = url;
+    var downUrl = (await task.onComplete).ref.getDownloadURL();
+    downUrl.then((value) {
+      setState(() {
+        _image = value;
+      });
     });
 
     // setState(() {

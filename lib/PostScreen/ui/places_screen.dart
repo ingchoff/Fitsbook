@@ -90,9 +90,6 @@ class PlacesScreenState extends State<PlacesScreen> {
               ),
             ),
         );
-        placeList.add(
-          Text()
-        );
         for (dynamic i in _places) {
         placeList.add(
           Card(

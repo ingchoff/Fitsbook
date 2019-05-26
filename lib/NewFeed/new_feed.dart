@@ -23,13 +23,15 @@ String userPic;
 String userId;
 
 class NewFeedState extends State<NewFeed> {
-  
+  ScrollController _scrollController;
   final Firestore _db = Firestore.instance;
- 
+  bool _isOnTop = true;
+  
   @override
   void initState(){
     super.initState();
     // สำหรับเรียกภาพผู้ใช้ตอนโพสต์
+    _scrollController = ScrollController();
     readFile('profile').then((String value){
       userPic = value;
     });
@@ -37,7 +39,18 @@ class NewFeedState extends State<NewFeed> {
     readFile('userId').then((String value){
       userId = value;
     });
+  }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  _scrollToTop() {
+    _scrollController.animateTo(_scrollController.position.minScrollExtent,
+        duration: Duration(milliseconds: 1000), curve: Curves.easeIn);
+    setState(() => _isOnTop = true);
   }
 
   final TextEditingController comment_Word = TextEditingController();
@@ -135,12 +148,18 @@ class NewFeedState extends State<NewFeed> {
     // printUrl();
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Image.asset('resources/logo.PNG', fit: BoxFit.cover, width: 25,)
+        title: GestureDetector(
+          onTap: () {
+            _scrollToTop();
+          },
+          child: Center(
+            child: Image.asset('resources/logo.PNG', fit: BoxFit.cover, width: 25,)
+          ),
         )
         
       ),
       body: ListView(
+        controller: _scrollController,
         children: [ Container(
           
           child: Column(

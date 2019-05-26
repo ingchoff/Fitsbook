@@ -146,79 +146,8 @@ class UpdatedFormState extends State<UpdatedForm> {
         _image = value;
       });
     });
-
-    // setState(() {
-    //   _image = image;
-    // });
   }
-
-  // Future<bool> updateDialog(BuildContext context, selectedDoc) async {
-  //   return showDialog(
-  //       context: context,
-  //       barrierDismissible: false,
-  //       builder: (BuildContext context) {
-  //         return AlertDialog(
-  //           title: Text('Update Data', style: TextStyle(fontSize: 15.0)),
-  //           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-  //           content: Container(
-  //             height: 350.0,
-  //             width: 150.0,
-  //             child: Column(
-  //               mainAxisAlignment: MainAxisAlignment.start,
-  //               crossAxisAlignment: CrossAxisAlignment.center,
-  //               children: <Widget>[
-  //                 TextField(
-  //                   decoration: InputDecoration(hintText: 'Enter new displayname'),
-  //                   controller: dname,
-  //                 ),
-  //                 SizedBox(height: 5.0),
-  //                 TextField(
-  //                   decoration: InputDecoration(hintText: 'Enter firstname'),
-  //                   controller: fname,
-  //                 ),
-  //                 TextField(
-  //                   decoration: InputDecoration(hintText: 'Enter gender'),
-  //                   controller: gender,
-  //                 ),
-  //                 TextField(
-  //                   decoration: InputDecoration(hintText: 'Enter lastname'),
-  //                   controller: lname,
-  //                 ),
-  //                 // Padding(
-  //                 //   padding: const EdgeInsets.only(top: 10),
-  //                 //   child:  image == null ? Text('Select an Image') : enableUpload(),
-  //                 // ),
-  //               ],
-  //             ),
-  //           ),
-  //           actions: <Widget>[
-  //             FloatingActionButton(
-  //               onPressed: getImage,
-  //               child: new Icon(Icons.add_a_photo),
-  //             ),
-  //             FlatButton(
-  //               child: Text('Update'),
-  //               textColor: Colors.blue,
-  //               onPressed: () {
-  //                 Navigator.of(context).pop();
-  //                 updateData(selectedDoc, {
-  //                   'dname': this.dname,
-  //                   'fname': this.fname,
-  //                   'gender': this.gender,
-  //                   'lname': this.lname
-  //                 }).then((result) {
-  //                 }).catchError((e) {
-  //                   print(e);
-  //                 });
-  //                 // Firestore.instance.collection('users').add({
-  //                 //   'photoUrl' 
-  //                 // });
-  //               },
-  //             )
-  //           ],
-  //         );
-  //       });
-  // }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

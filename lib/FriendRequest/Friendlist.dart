@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import './Friend.dart';
 
+DateTime _now = DateTime.now();
+
 class FriendList extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -70,11 +72,15 @@ class _FriendListState extends State<FriendList> {
           future: getRequests(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             var allReq = snapshot.data;
-            // if (allReq == null)
-            //   return Center(
-            //     child: CircularProgressIndicator(),
-            //   );
-            return allReq == null || allReq.keys.length == 0
+            if (allReq == null)
+              return (_now.compareTo(DateTime.now()) > 3)
+              ? Center(
+                child: Text('You have no friend now!'),
+              )
+              : Center(
+                child: CircularProgressIndicator(),
+              );
+            return allReq.keys.length == 0
                 ? Center(
                     child: Text('You have no friend now!'),
                   )

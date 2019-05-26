@@ -67,7 +67,7 @@ class UpdatedFormState extends State<UpdatedForm> {
     if (_isLoading) {
       return CircularProgressIndicator();
     }else {
-      return new Text('Update Profile');
+      return new Text('Update Profile', style: TextStyle(color: Colors.white),);
     }
   }
 
@@ -318,10 +318,10 @@ class UpdatedFormState extends State<UpdatedForm> {
               padding: EdgeInsets.only(top: 20, bottom: 20),
               child: Center(
                 child: _image == null ? 
-                Text('Tap Here To Select an image', style: TextStyle(fontSize: 20)):
+                Text('Tap Here To Select an image', style: TextStyle(fontSize: 10)):
                 Column(
                   children: <Widget>[
-                    Text('Tap image To Change an image', style: TextStyle(fontSize: 20)),
+                    Text('Tap image To Change an image', style: TextStyle(fontSize: 10)),
                     Padding(
                       padding: EdgeInsets.only(top: 20),
                       child: GestureDetector(
@@ -343,7 +343,7 @@ class UpdatedFormState extends State<UpdatedForm> {
               child: SizedBox(
               height: 50,
               child: RaisedButton(
-                color: Colors.amberAccent,
+                color: Colors.green,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24),
                 ),

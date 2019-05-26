@@ -436,29 +436,15 @@ class NewFeedState extends State<NewFeed> {
                                               ),
                                           ),
                                           // รูปโพสต์
-                                          FutureBuilder<dynamic>(
-                                            future: getPostPicAll(),
-                                            builder: (BuildContext context, AsyncSnapshot _snapshot) {
-                                              var allData = _snapshot.data;
-                                              if(allData == null) {  
-                                                return Center(
-                                                  child: CircularProgressIndicator(),
-                                                );
-                                              }
-                                              if (allData.length == 0) {
-                                                return Center(
-                                                  child: Text(''),
-                                                );
-                                              }
-                                              return Text(_snapshot.data[i].toString());
-                                              return _snapshot.data[i] == null || _snapshot.data[i] == ''
-                                              ? new Image.asset('resources/logo.PNG', width: 125)
-                                              : new Image.network(
-                                                _snapshot.data[i],
-                                                width: 125,
-                                                height: 200,
-                                              );
-                                            },
+                                          urlPicPost == null || urlPicPost == ''
+                                          ? new SizedBox(
+                                            width: 0,
+                                            height: 0,
+                                          )
+                                          : new Image.network(
+                                            urlPicPost,
+                                            width: 125,
+                                            height: 200,
                                           ),
                                           
                                           // กดดูคอมเมนต์
@@ -547,7 +533,7 @@ class NewFeedState extends State<NewFeed> {
                                                   _controllerList[i].clear();
                                                   setState(() {
                                                     context = context;
-                                                  });;
+                                                  });
                                                   Scaffold.of(context).showSnackBar(new SnackBar(
                                                     content: new Text('คอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
                                                   ));
@@ -619,13 +605,6 @@ class NewFeedState extends State<NewFeed> {
             ], 
             ),
           ), ]
-      ),
-      
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => ChatScreen()));
-        },
-        child: Icon(Icons.chat),
       ),
     );
   }

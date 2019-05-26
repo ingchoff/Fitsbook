@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
@@ -33,12 +35,6 @@ class UpdatedFormState extends State<UpdatedForm> {
   String _image;
   final formatter1 = new DateFormat('yyyyMMdd');
   DateTime birthdate;
-  // String dname;
-  // String fname;
-  // String gender;
-  // String lname;
-  // File image;
-  // String uid;
 
   @override
   void initState() {
@@ -52,6 +48,8 @@ class UpdatedFormState extends State<UpdatedForm> {
     lname = TextEditingController(text: _userProfile['lname']);
     gender = TextEditingController(text: _userProfile['gender']);
     birthday = TextEditingController(text: _userProfile['birthdate'].toString());
+    birthdate = DateTime(int.parse(birthday.text.substring(0,4)),
+              int.parse(birthday.text.substring(4,6)), int.parse(birthday.text.substring(6,8)));
     if (gender.text == 'male') {
       setState(() {
         route = 0;
@@ -63,13 +61,24 @@ class UpdatedFormState extends State<UpdatedForm> {
     }
   }
 
-  Widget setUpButtonChild() {
+  Widget setUpImage() {
     if (_isLoading) {
-      return CircularProgressIndicator();
-    }else {
-      return new Text('Update Profile', style: TextStyle(color: Colors.white),);
+      return CircularProgressIndicator(valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),);
+    } else {
+      return GestureDetector(
+        onTap: () {
+          getImage(_uid);
+        },
+        child: CircleAvatar(
+          radius: 100.0,
+          backgroundImage:
+          NetworkImage(_image),
+          backgroundColor: Colors.transparent,
+        )
+      );
     }
   }
+  
 
   void setUser() {
     Firestore.instance.collection('users').document(_uid).get().then((doc) {
@@ -84,9 +93,6 @@ class UpdatedFormState extends State<UpdatedForm> {
     final formState = _formkey.currentState;
     if(formState.validate()) {
       formState.save();
-      setState(() {
-       _isLoading = true;
-      });
       String txt;
       QuerySnapshot users = await store.collection('users').getDocuments();
       for(var i=0;i<users.documents.length;i++) {
@@ -112,17 +118,11 @@ class UpdatedFormState extends State<UpdatedForm> {
         _userProfile['dname'] = dname.text;
         _userProfile['fname'] = fname.text;
         _userProfile['lname'] = lname.text;
-        _userProfile['birthdate'] = birthday.text;
+        _userProfile['birthdate'] = formatter1.format(birthdate);
         _userProfile['gender'] = gender.text;
         _userProfile['profile'] = _image;
-        setState(() {
-          _isLoading = false; 
-        });
         Navigator.of(context).pop();
       } else {
-        setState(() {
-          _isLoading = false;
-        });
         scaffoldState.showSnackBar(new SnackBar(
           content: new Text('Display Name นี้ถูกใช้แล้ว'),
         ));
@@ -132,18 +132,23 @@ class UpdatedFormState extends State<UpdatedForm> {
 
   Future getImage(_uid) async {
     var image = await ImagePicker.pickImage(source: ImageSource.gallery);
+    if (image.length == 0) {
+      setState(() {
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = true;
+      });
+    }
     final StorageReference firebaseStorageRef =
         FirebaseStorage.instance.ref().child('profile/${_uid}/profile');
     final StorageUploadTask task = firebaseStorageRef.putFile(image);
     var downUrl = (await task.onComplete).ref.getDownloadURL();
-    if (task.isComplete) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
     downUrl.then((value) {
       setState(() {
         _image = value;
+        _isLoading = false;
       });
     });
   }
@@ -244,6 +249,8 @@ class UpdatedFormState extends State<UpdatedForm> {
               ],
             ),
             DateTimePickerFormField(
+              initialValue: DateTime(int.parse(birthday.text.substring(0,4)),
+              int.parse(birthday.text.substring(4,6)), int.parse(birthday.text.substring(6,8))),
               inputType: InputType.date,
               format: DateFormat("yyyy-MM-dd"),
               initialDate: DateTime(2000, 1, 1),
@@ -260,7 +267,7 @@ class UpdatedFormState extends State<UpdatedForm> {
             Padding(
               padding: EdgeInsets.only(top: 20, bottom: 20),
               child: Center(
-                child: _image == null ? 
+                child: _image == null || _image == '' ? 
                 RaisedButton(
                   onPressed: () {
                     getImage(_uid);
@@ -269,20 +276,10 @@ class UpdatedFormState extends State<UpdatedForm> {
                 ):
                 Column(
                   children: <Widget>[
-                    Text('Tap image To Change an image', style: TextStyle(fontSize: 10)),
+                    Text('Tap image To Change an image', style: TextStyle(fontSize: 13)),
                     Padding(
                       padding: EdgeInsets.only(top: 20),
-                      child: GestureDetector(
-                        onTap: () {
-                          getImage(_uid);
-                        },
-                        child: CircleAvatar(
-                          radius: 100.0,
-                          backgroundImage:
-                              NetworkImage(_image),
-                          backgroundColor: Colors.transparent,
-                        )
-                      )
+                      child: setUpImage()
                     )
                   ],
                 )

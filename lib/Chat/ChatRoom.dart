@@ -30,8 +30,6 @@ class ChatRoomState extends State<ChatRoom> {
   }
 
   Future initChat() async {
-    List<ChatMessage> msgBuffer = [];
-
     String uid = await FileProvider.readFile('userId');
     _uid = uid;
     DocumentSnapshot doc =
@@ -49,22 +47,75 @@ class ChatRoomState extends State<ChatRoom> {
     }
 
     CollectionReference refs = Firestore.instance.collection('chats');
-    QuerySnapshot docs =
-        await refs.where('users', isEqualTo: widget.users).getDocuments();
+    QuerySnapshot docs = await refs
+        .where('users', arrayContains: widget.users[0])
+        .getDocuments();
 
-    if (docs.documents.length == 0) {
+    dynamic allChatroom = docs.documents.where((DocumentSnapshot chatRoom) {
+      bool isContainAllUsers = true;
+
+      for (String user in widget.users) {
+        if (!chatRoom.data['users'].contains(user)) isContainAllUsers = false;
+      }
+
+      bool exp = chatRoom.data['users'].length == widget.users.length &&
+          isContainAllUsers;
+      return exp;
+    }).toList();
+  
+    if (allChatroom.length == 0) {
       refs.document().setData({'users': widget.users});
-      docs = await refs.where('users', isEqualTo: widget.users).getDocuments();
+      QuerySnapshot docs = await refs
+        .where('users', arrayContains: widget.users[0])
+        .getDocuments();
+
+    allChatroom = docs.documents.where((DocumentSnapshot chatRoom) {
+      bool isContainAllUsers = true;
+
+      for (String user in widget.users) {
+        if (!chatRoom.data['users'].contains(user)) isContainAllUsers = false;
+      }
+
+      bool exp = chatRoom.data['users'].length == widget.users.length &&
+          isContainAllUsers;
+      return exp;
+    }).toList();
     }
 
-    chatroomName = docs.documents[0].documentID;
+    chatroomName = allChatroom[0].documentID;
 
     _listenerOpen();
 
     setState(() {
-      // _messages = msgBuffer;
       isFinish = true;
     });
+  }
+
+  void _messagesToList(QuerySnapshot data) {
+    for (dynamic doc in data.documents) {
+      List<ChatMessage> duplicate = _messages
+          .where((ChatMessage chat) => chat.msgId == doc.documentID)
+          .toList();
+
+      if (duplicate.length == 0) {
+        try {
+          setState(() {
+            _messages.insert(
+                0,
+                ChatMessage(
+                  text: doc.data['message'],
+                  msgId: doc.documentID,
+                  userId: doc.data['user'],
+                  isOwner: _uid == doc.data['user'] ? true : false,
+                  path: _profileMap[doc.data['user']],
+                  name: _nameMap[doc.data['user']],
+                ));
+          });
+        } catch (e) {
+          print('there is some error about dispose()');
+        }
+      }
+    }
   }
 
   void _listenerOpen() {
@@ -74,26 +125,7 @@ class ChatRoomState extends State<ChatRoom> {
         .collection('messages')
         .orderBy('dateCreated')
         .snapshots()
-        .listen((data) => data.documents.forEach((doc) {
-              List<ChatMessage> duplicate = _messages
-                  .where((ChatMessage chat) => chat.msgId == doc.documentID)
-                  .toList();
-
-              if (duplicate.length == 0) {
-                setState(() {
-                  _messages.insert(
-                      0,
-                      ChatMessage(
-                        text: doc.data['message'],
-                        msgId: doc.documentID,
-                        userId: doc.data['user'],
-                        isOwner: _uid == doc.data['user'] ? true : false,
-                        path: _profileMap[doc.data['user']],
-                        name: _nameMap[doc.data['user']],
-                      ));
-                });
-              }
-            }));
+        .listen((data) => _messagesToList(data));
   }
 
   void _handleSubmitted(String text) {

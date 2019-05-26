@@ -1,3 +1,4 @@
+import 'package:fitsbook/Chat/ChatScreen.dart';
 import 'package:fitsbook/Profile/EditProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -167,28 +168,33 @@ class _ProfileState extends State<Profile> {
         ButtonTheme(
           buttonColor: Colors.green,
           child: RaisedButton(
-            child: 
-            Text('Edit Profile'
-            ,style: TextStyle(color: Colors.white),),
-          // todo: nav ไปหน้า edit profile ตรงงน้
-          onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatedForm(_userProfile, _uid)));
-          },
+            child: Text(
+              'Edit Profile',
+              style: TextStyle(color: Colors.white),
+            ),
+            // todo: nav ไปหน้า edit profile ตรงงน้
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UpdatedForm(_userProfile, _uid)));
+            },
           ),
         ),
         ButtonTheme(
           buttonColor: Colors.green,
           child: RaisedButton(
-            child: 
-            Text('Friends List'
-            ,style: TextStyle(color: Colors.white),),
-          // todo: nav ไปหน้า edit profile ตรงงน้
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => FriendList()),
-            );
-          },
+            child: Text(
+              'Friends List',
+              style: TextStyle(color: Colors.white),
+            ),
+            // todo: nav ไปหน้า edit profile ตรงงน้
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FriendList()),
+              );
+            },
           ),
         ),
       ];
@@ -197,7 +203,12 @@ class _ProfileState extends State<Profile> {
         RaisedButton(
           child: Text('Chat'),
           onPressed: () {
-            print('chat');
+            readFile('userId').then((String userID) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ChatScreen(users: [userID, _uid],)),
+              );
+            });
           },
         ),
       ];
@@ -213,18 +224,17 @@ class _ProfileState extends State<Profile> {
           child: Text('Accept'),
           onPressed: () async {
             FirebaseUser user = await FirebaseAuth.instance.currentUser();
-            await Firestore
-              .instance
-              .collection('users')
-              .document(user.uid)
-              .collection('requests')
-              .document(_uid)
-              .setData({
-                'status': 'accepted',
-              }, merge: true);
-              setState(() {
-               _isFriend = true; 
-              });
+            await Firestore.instance
+                .collection('users')
+                .document(user.uid)
+                .collection('requests')
+                .document(_uid)
+                .setData({
+              'status': 'accepted',
+            }, merge: true);
+            setState(() {
+              _isFriend = true;
+            });
           },
         ),
       ];
@@ -243,19 +253,18 @@ class _ProfileState extends State<Profile> {
           child: Text('Add friend!'),
           onPressed: () async {
             FirebaseUser user = await FirebaseAuth.instance.currentUser();
-            await Firestore
-              .instance
-              .collection('users')
-              .document(_uid)
-              .collection('requests')
-              .document(user.uid)
-              .setData({
-                'status': 'waiting',
-                'dateCreated': DateTime.now().millisecondsSinceEpoch
-              }, merge: true);
-              setState(() {
-               _isRequest = -1;
-              });
+            await Firestore.instance
+                .collection('users')
+                .document(_uid)
+                .collection('requests')
+                .document(user.uid)
+                .setData({
+              'status': 'waiting',
+              'dateCreated': DateTime.now().millisecondsSinceEpoch
+            }, merge: true);
+            setState(() {
+              _isRequest = -1;
+            });
           },
         ),
       ];
@@ -286,12 +295,10 @@ class _ProfileState extends State<Profile> {
       _list.addAll(_posts.keys.map((k) {
         return GestureDetector(
           // link ไปยังโพสต์โดยการแก้ on tap function
-          onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        Profile(_uid)),
-              ),
+          // onTap: () => Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => Profile(_uid)),
+          //     ),
           child: ProfilePosts(
             profile: ProfilePics(diameter: 50, path: _userProfile['profile']),
             dname: _userProfile['dname'],
@@ -309,10 +316,12 @@ class _ProfileState extends State<Profile> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Center(
-            child: Image.asset('resources/logo.PNG', fit: BoxFit.cover, width: 25,)
-          )
-        ),
+            title: Center(
+                child: Image.asset(
+          'resources/logo.PNG',
+          fit: BoxFit.cover,
+          width: 25,
+        ))),
         body: _profilePage);
   }
 }

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
 import './Friend.dart';
+import '../Profile.dart';
 
 DateTime _now = DateTime.now();
 
@@ -74,12 +75,12 @@ class _FriendListState extends State<FriendList> {
             var allReq = snapshot.data;
             if (allReq == null)
               return (_now.compareTo(DateTime.now()) > 3)
-              ? Center(
-                child: Text('You have no friend now!'),
-              )
-              : Center(
-                child: CircularProgressIndicator(),
-              );
+                  ? Center(
+                      child: Text('You have no friend now!'),
+                    )
+                  : Center(
+                      child: CircularProgressIndicator(),
+                    );
             return allReq.keys.length == 0
                 ? Center(
                     child: Text('You have no friend now!'),
@@ -88,9 +89,19 @@ class _FriendListState extends State<FriendList> {
                     itemCount: allReq.keys.length,
                     itemBuilder: (context, index) {
                       String key = allReq.keys.toList()[index];
-                      return Friend(
-                        dname: allReq[key]['dname'],
-                        profilePath: allReq[key]['path'],
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    Profile(key)),
+                          );
+                        },
+                        child: Friend(
+                          dname: allReq[key]['dname'],
+                          profilePath: allReq[key]['path'],
+                        ),
                       );
                     },
                   );

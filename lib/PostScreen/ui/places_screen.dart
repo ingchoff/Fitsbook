@@ -47,6 +47,7 @@ class PlacesScreenState extends State<PlacesScreen> {
       setState(() {
         address = jsonDecode(response.body)['results'][0]['formatted_address'];
       });
+      PostFormState.tagged = address;
     });
     setState(() {
       position = point;

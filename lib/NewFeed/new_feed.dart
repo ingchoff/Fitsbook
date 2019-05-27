@@ -571,6 +571,9 @@ class NewFeedState extends State<NewFeed> {
                                               _userList.removeAt(i);
                                               _controllerList.removeAt(snapshot.data.length);
                                               _db.collection('posts').document(snapshot.data[i].documentID).delete();
+                                              setState(() {
+                                                context = context;
+                                              });
                                               Scaffold.of(context).showSnackBar(new SnackBar(
                                                 content: new Text('ลบโพสต์ดังกล่าวเรียบร้อยแล้ว'),
                                               ));

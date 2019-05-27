@@ -202,7 +202,7 @@ class PostFormState extends State {
                     color: Colors.white,
                   ),
                 ),
-                color: Colors.blue,
+                color: Colors.green,
                 onPressed: () async {
                   _formKey.currentState.validate();
                   // String detail = post;

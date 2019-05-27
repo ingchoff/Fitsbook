@@ -10,7 +10,7 @@ class ProfilePics extends StatelessWidget {
   Widget build(BuildContext context) {
     // error handling
     NetworkImage image;
-    if (path != null) {
+    if (path != null && path != '') {
       image = NetworkImage(path);
     } else {
       String holder = '''https://firebasestorage.googleapis.com/v0/b/fitsbook-social.appspot.com/o/profile%2Fprofile-placeholder.png?alt=media&token=e62f8d1a-1a96-4632-b249-0f436c9418b3''';

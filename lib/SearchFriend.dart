@@ -4,19 +4,19 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:path_provider/path_provider.dart';
-import './Friend.dart';
-import '../Profile.dart';
+import './FriendRequest/Friend.dart';
+import 'Profile.dart';
 
 DateTime _now = DateTime.now();
 
-class FriendList extends StatefulWidget {
+class SearchFriend extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _FriendListState();
+    return _SearchFriendState();
   }
 }
 
-class _FriendListState extends State<FriendList> {
+class _SearchFriendState extends State<SearchFriend> {
   Map<String, dynamic> friendsLists = {};
 
   Future<String> get _localPath async {
@@ -45,15 +45,14 @@ class _FriendListState extends State<FriendList> {
     Map<String, dynamic> _friendsLists = {};
 
     String userId = await readFile('userId');
-    DocumentSnapshot docs =
-        await Firestore.instance.collection('users').document(userId).get();
-    print(docs.data['friends']);
-    for (String f in docs.data['friends']) {
-      _friendsLists[f] = {};
-      DocumentSnapshot profileDocs =
-          await Firestore.instance.collection('users').document(f).get();
-      _friendsLists[f]['dname'] = profileDocs.data['dname'];
-      _friendsLists[f]['path'] = profileDocs.data['profile'];
+    QuerySnapshot docs = await Firestore.instance.collection('users').getDocuments();
+
+    for (DocumentSnapshot f in docs.documents) {
+      if (f.documentID != userId) {
+        _friendsLists[f.documentID] = {};
+        _friendsLists[f.documentID]['dname'] = f.data['dname'];
+        _friendsLists[f.documentID]['path'] = f.data['profile'];
+      }
     }
 
     print(_friendsLists);

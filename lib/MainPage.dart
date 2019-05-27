@@ -3,6 +3,7 @@ import 'package:fitsbook/FeatureList.dart';
 import 'package:fitsbook/FriendRequest.dart';
 import 'package:fitsbook/FriendRequest/RequestList.dart';
 import 'package:fitsbook/Map.dart';
+import 'package:fitsbook/SearchFriend.dart';
 import 'package:flutter/material.dart';
 import './Holder.dart';
 import './NewFeed/new_feed.dart';
@@ -26,6 +27,7 @@ class _MainPageState extends State<MainPage> {
   List<Widget> _children = [
       NewFeed(),
       FriendRequest(),
+      SearchFriend(),
       Profile(),
       FeatureList()
     ];
@@ -52,6 +54,10 @@ class _MainPageState extends State<MainPage> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.notifications),
                 title: Text('Notifications'),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                title: Text('Search Friend'),
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person),

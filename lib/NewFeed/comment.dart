@@ -524,6 +524,9 @@ class CommentState extends State<Comment> {
                                                     onPressed: () {
                                                       _db.collection('posts').document(snapshot.data.documents[widget.no].documentID)
                                                       .collection('comments').document(snapshot2.data[i].documentID).delete();
+                                                      setState(() {
+                                                        context = context;
+                                                      });
                                                       Scaffold.of(context).showSnackBar(new SnackBar(
                                                         content: new Text('ลบคอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
                                                       ));

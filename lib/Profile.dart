@@ -249,8 +249,11 @@ class _ProfileState extends State<Profile> {
       ];
     } else {
       allButton = [
-        RaisedButton(
-          child: Text('Add friend!'),
+        widget.uid == _uid 
+          ? Text('')
+          :RaisedButton(
+          child:
+          Text('Add friend!'),
           onPressed: () async {
             FirebaseUser user = await FirebaseAuth.instance.currentUser();
             await Firestore.instance

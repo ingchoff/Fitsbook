@@ -36,13 +36,15 @@ class CommentState extends State<Comment> {
       urlPicPost = url;
     });
 
-    void initState() {
+   
+  }
+ void initState() {
       super.initState();
       _isFinish = false;
       count = 0;
     }
-  }
 
+    
   String urlUserPost;
   getUrlForPostUser(String userId) async {
     StorageReference ref = 
@@ -90,7 +92,7 @@ class CommentState extends State<Comment> {
                   );
                 }
                 getUrlForPostUser(snapshot.data.documents[widget.no]['user']);
-                getUrlForPost(snapshot.data.documents[widget.no]['photo'][0]);
+                getUrlForPost(snapshot.data.documents[widget.no].documentID);
                 String place = '';
                 double userSize = 18;
                 double placeSize = 10;
@@ -522,6 +524,9 @@ class CommentState extends State<Comment> {
                                                     onPressed: () {
                                                       _db.collection('posts').document(snapshot.data.documents[widget.no].documentID)
                                                       .collection('comments').document(snapshot2.data[i].documentID).delete();
+                                                      setState(() {
+                                                        context = context;
+                                                      });
                                                       Scaffold.of(context).showSnackBar(new SnackBar(
                                                         content: new Text('ลบคอมเมนต์ดังกล่าวเรียบร้อยแล้ว'),
                                                       ));

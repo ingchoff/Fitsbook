@@ -43,28 +43,8 @@ class NewFeedState extends State<NewFeed> {
     readFile('userId').then((String value){
       userId = value;
     });
-  //   _list = [];
-  //   Future<List> download() async {
-  //     var example = await _db.collection('posts').orderBy('dateCreated', descending: true).getDocuments();
-  //     return example.documents;
-  //   }
-  //   FutureBuilder(
-  //     future: download(),
-  //     builder: (context, snapshot) {
-  //       print(snapshot.data.length.toString());
-  //     },
-  //   );
-  //   _userList = [];
-  //   _postList = [];
-  //   // print('All : ' + _list.length.toString());
-  //   for(int i; i < _list.length; i++) {
-  //     String _docId = _list[i].documentID;
-  //     String _userId = _list[i]['user'];
-  //     getUrlForPost(_docId);
-  //     _userList.add(urlUserPost);
-  //     getUrlForPostUser(_userId);
-  //     _postList.add(urlPicPost);
-  //   }
+    
+    
   }
 
   @override
@@ -192,11 +172,15 @@ class NewFeedState extends State<NewFeed> {
     return data.documents;
   }
 
-  
+  Future getAllPicPost() async {
+    List a = await getAllPost();
+    return a;
+  }
   
 
   @override
   Widget build(BuildContext context) {
+   
     debugPrint(userId);
     // printUrl();
     return Scaffold(
@@ -308,7 +292,8 @@ class NewFeedState extends State<NewFeed> {
                           
                             { 
                               
-                              
+                              getUrlForPost(snapshot.data[i].documentID);
+                              getUrlForPostUser(snapshot.data[i]['user']);
                               _controllerList.add(TextEditingController());
 
                                 // โยนค่ำเข้าฟังก์ชัน ให้รีเทิร์น URL
@@ -364,6 +349,12 @@ class NewFeedState extends State<NewFeed> {
                                                 child: GestureDetector(
                                                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Profile(snapshot.data[i]['user']))),
                                                   child: 
+                                                    // FutureBuilder(
+                                                    //   future: getUrlForPost(snapshot.data[i]),
+                                                    //   builder: (context, snapshot) {
+
+                                                    //   },
+                                                    // ),
                                                     urlUserPost == null || urlUserPost == '' 
                                                     ? new ProfilePics(
                                                       path: 'https://raw.githubusercontent.com/ingchoff/Fitsbook/master/resources/logo.PNG',
@@ -580,6 +571,9 @@ class NewFeedState extends State<NewFeed> {
                                               _userList.removeAt(i);
                                               _controllerList.removeAt(snapshot.data.length);
                                               _db.collection('posts').document(snapshot.data[i].documentID).delete();
+                                              setState(() {
+                                                context = context;
+                                              });
                                               Scaffold.of(context).showSnackBar(new SnackBar(
                                                 content: new Text('ลบโพสต์ดังกล่าวเรียบร้อยแล้ว'),
                                               ));

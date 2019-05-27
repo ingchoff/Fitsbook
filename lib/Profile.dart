@@ -249,9 +249,8 @@ class _ProfileState extends State<Profile> {
       ];
     } else {
       allButton = [
-        widget.uid == _uid 
-          ? Text('')
-          :RaisedButton(
+        
+          RaisedButton(
           child:
           Text('Add friend!'),
           onPressed: () async {

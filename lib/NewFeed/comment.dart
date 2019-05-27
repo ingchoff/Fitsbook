@@ -36,13 +36,15 @@ class CommentState extends State<Comment> {
       urlPicPost = url;
     });
 
-    void initState() {
+   
+  }
+ void initState() {
       super.initState();
       _isFinish = false;
       count = 0;
     }
-  }
 
+    
   String urlUserPost;
   getUrlForPostUser(String userId) async {
     StorageReference ref = 
@@ -90,7 +92,7 @@ class CommentState extends State<Comment> {
                   );
                 }
                 getUrlForPostUser(snapshot.data.documents[widget.no]['user']);
-                getUrlForPost(snapshot.data.documents[widget.no]['photo'][0]);
+                getUrlForPost(snapshot.data.documents[widget.no].documentID);
                 String place = '';
                 double userSize = 18;
                 double placeSize = 10;
